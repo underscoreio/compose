@@ -36,26 +36,15 @@ object Main extends App {
   def powerChord(base: Score) =
     base | (base transpose 7)
 
-  def smokeOnTheWater = {
-    import compose.tab._
-    tab"""
-    # Smoke on the Water
-
-    --------------------------------
-    --------------------------------
-    --------------------------------
-    2-x-5-x-7-----2-x-5-x-8-7-------
-    2-x-5-x-7-----2-x-5-x-8-7-------
-    0-x-3-x-5-----0-x-3-x-6-5-------
-
-    --------------------------------
-    --------------------------------
-    --------------------------------
-    2-x-5-x-7-----5---2-------------
-    2-x-5-x-7-----5---2-------------
-    0-x-3-x-5-----3---0-------------
-    """
-  }
+  def smokeOnTheWater = (
+    (E4.s + Rest.s + G4.s + Rest.s + A4.e.dotted + E4.s + Rest.s + G4.s + Rest.s + As4.s + A4.q) |
+    (B3.s + Rest.s + D4.s + Rest.s + E4.e.dotted + B3.s + Rest.s + D4.s + Rest.s + F4.s  + E4.q) |
+    (E3.s + Rest.s + G3.s + Rest.s + A3.e.dotted + E3.s + Rest.s + G3.s + Rest.s + As3.s + A3.q)
+  ) + (
+    (E4.s + Rest.s + G4.s + Rest.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
+    (B3.s + Rest.s + D4.s + Rest.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
+    (E3.s + Rest.s + G3.s + Rest.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
+  )
 
   def twelveBar = {
     val bar =
@@ -72,6 +61,19 @@ object Main extends App {
       bar * 2
   }
 
+  val freebird = {
+    import compose.tab._
+
+    tab"""
+    |-------------------------------|----------------------------|
+    |-3------------3---3---3-3------|-5--x-----------------------|
+    |-4------------3-x-3-x-3-3--x-x-|-5--x-----------------------|
+    |-5--x-------x-3-x-3-x-3-3--x-x-|-5--x-----5----5----5----5--|
+    |-5--x---0-2-x-1-x-1-x-1-1--x-x-|-3----5h7----7----7----7----|
+    |-3--x-3-----x------------------|----------------------------|
+    """
+  }
+
   case class MenuItem(number: String, name: String, score: Score) {
     override def toString = s"$number. $name"
   }
@@ -82,7 +84,8 @@ object Main extends App {
     MenuItem("3", "Scale", scale(C3.s) * 4),
     MenuItem("4", "Scale With Echo", echo(scale(C3.s) * 4, Duration.Eigth.dotted)),
     MenuItem("5", "Smoke On The Water", smokeOnTheWater),
-    MenuItem("6", "Twelve Bar Blues", twelveBar)
+    MenuItem("6", "Twelve Bar Blues", twelveBar),
+    MenuItem("7", "Freebird!", freebird)
   )
 
   Player.withPlayer(4) { player =>

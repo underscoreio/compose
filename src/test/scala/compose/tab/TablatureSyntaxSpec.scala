@@ -17,12 +17,12 @@ class TablatureSyntaxSpec extends FlatSpec with Matchers {
       0
       """
     openNotes should equal(
-      E5.t |
-      B4.t |
-      G4.t |
-      D4.t |
-      A3.t |
-      E3.t
+      E5.s |
+      B4.s |
+      G4.s |
+      D4.s |
+      A3.s |
+      E3.s
     )
   }
 

@@ -51,12 +51,12 @@ package object examples {
       ( E3.q | Cs4.q ) +
       ( E3.s | B3.s  )
 
-    bar * 4 +
+    (bar transpose 0) * 4 +
     (bar transpose 5) * 2 +
-    bar * 2 +
-    (bar transpose 7) +
-    (bar transpose 5) +
-    bar * 2
+    (bar transpose 0) * 2 +
+    (bar transpose 7) * 1 +
+    (bar transpose 5) * 1 +
+    (bar transpose 0) * 2
   }
 
   val freebird = {

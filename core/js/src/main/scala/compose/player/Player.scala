@@ -12,28 +12,29 @@ object Player {
   type EC = ExecutionContext
 
   def play(score: Score)(implicit ec: EC): Future[Unit] = {
-    val ctx = js.Dynamic.newInstance(js.Dynamic.global.AudioContext)()
+    val ctx = new AudioContext()
     implicit val tempo = 120.bpm
 
-    loadSound(ctx, "web-audio-spike/cat9.wav").flatMap(playCommands(ctx, _, score.compile))
+    loadSound(ctx, "web-audio-spike/cat9.wav").
+      flatMap(playCommands(ctx, _, score.compile))
   }
 
-  def loadSound(ctx: js.Dynamic, url: String): Future[js.Dynamic] = {
+  def loadSound(ctx: AudioContext, url: String): Future[AudioBuffer] = {
     var request = new dom.XMLHttpRequest()
-    var promise = Promise[js.Dynamic]
+    var promise = Promise[AudioBuffer]
 
     request.open("GET", url, true)
     request.responseType = "arraybuffer"
 
     request.onload = (evt: dom.Event) =>
-      ctx.decodeAudioData(request.response, (buffer: js.Dynamic) => promise success buffer)
+      ctx.decodeAudioData(request.response, (buffer: AudioBuffer) => promise success buffer)
 
     request.send()
 
     promise.future
   }
 
-  def playCommands(ctx: js.Dynamic, buffer: js.Dynamic, commands: Seq[Command])(implicit ec: EC): Future[Unit] = {
+  def playCommands(ctx: AudioContext, buffer: AudioBuffer, commands: Seq[Command])(implicit ec: EC): Future[Unit] = {
     commands match {
       case Nil =>
         Future.successful(())
@@ -49,7 +50,7 @@ object Player {
     }
   }
 
-  def playNoteOn(ctx: js.Dynamic, buffer: js.Dynamic, cmd: NoteOn)(implicit ec: EC): Future[Unit] = {
+  def playNoteOn(ctx: AudioContext, buffer: AudioBuffer, cmd: NoteOn)(implicit ec: EC): Future[Unit] = {
     Future {
       var source = ctx.createBufferSource()
       source.buffer = buffer
@@ -59,7 +60,7 @@ object Player {
     }
   }
 
-  def playWait(ctx: js.Dynamic, cmd: Wait)(implicit ec: EC): Future[Unit] = {
+  def playWait(ctx: AudioContext, cmd: Wait)(implicit ec: EC): Future[Unit] = {
     val promise = Promise[Unit]
     dom.setTimeout((() => promise success ()), cmd.millis.toInt)
     promise.future

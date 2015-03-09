@@ -1,12 +1,11 @@
 package compose
 
-import compose.core._
+import compose.core.{ Rest => r, _ }
 import compose.core.Note._
-import compose.tablature._
 
 package object examples {
   def duellingBanjos =
-    ((E3.e + F3.e + G3.q + E3.q + F3.q + D3.q + E3.q + C3.q + D3.h) transpose 12) + Rest.h +
+    ((E3.e + F3.e + G3.q + E3.q + F3.q + D3.q + E3.q + C3.q + D3.h) transpose 12) + r.h +
     ((G2.q + C3.q + C3.q + D3.q + E3.q + C3.q + E3.q + D3.h       ) transpose 12)
 
   def chordProgression =
@@ -30,19 +29,19 @@ package object examples {
       reduceLeft(_ + _)
 
   def echo(score: Score, duration: Duration): Score =
-    score | (Rest(duration) + score)
+    score | (r(duration) + score)
 
   def powerChord(base: Score) =
     base | (base transpose 7)
 
   def smokeOnTheWater = (
-    (E4.s + Rest.s + G4.s + Rest.s + A4.e.dotted + E4.s + Rest.s + G4.s + Rest.s + As4.s + A4.q) |
-    (B3.s + Rest.s + D4.s + Rest.s + E4.e.dotted + B3.s + Rest.s + D4.s + Rest.s + F4.s  + E4.q) |
-    (E3.s + Rest.s + G3.s + Rest.s + A3.e.dotted + E3.s + Rest.s + G3.s + Rest.s + As3.s + A3.q)
+    (E4.s + r.s + G4.s + r.s + A4.e.dotted + E4.s + r.s + G4.s + r.s + As4.s + A4.q) |
+    (B3.s + r.s + D4.s + r.s + E4.e.dotted + B3.s + r.s + D4.s + r.s + F4.s  + E4.q) |
+    (E3.s + r.s + G3.s + r.s + A3.e.dotted + E3.s + r.s + G3.s + r.s + As3.s + A3.q)
   ) + (
-    (E4.s + Rest.s + G4.s + Rest.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
-    (B3.s + Rest.s + D4.s + Rest.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
-    (E3.s + Rest.s + G3.s + Rest.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
+    (E4.s + r.s + G4.s + r.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
+    (B3.s + r.s + D4.s + r.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
+    (E3.s + r.s + G3.s + r.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
   )
 
   def twelveBar = {
@@ -60,18 +59,18 @@ package object examples {
     bar * 2
   }
 
-  val freebird = {
-    import compose.tablature._
+  // val freebird = {
+  //   import compose.tablature._
 
-    tab"""
-    |-------------------------------|----------------------------|
-    |-3------------3---3---3-3------|-5--x-----------------------|
-    |-4------------3-x-3-x-3-3--x-x-|-5--x-----------------------|
-    |-5--x-------x-3-x-3-x-3-3--x-x-|-5--x-----5----5----5----5--|
-    |-5--x---0-2-x-1-x-1-x-1-1--x-x-|-3----5h7----7----7----7----|
-    |-3--x-3-----x------------------|----------------------------|
-    """
-  }
+  //   tab"""
+  //   |-------------------------------|----------------------------|
+  //   |-3------------3---3---3-3------|-5--x-----------------------|
+  //   |-4------------3-x-3-x-3-3--x-x-|-5--x-----------------------|
+  //   |-5--x-------x-3-x-3-x-3-3--x-x-|-5--x-----5----5----5----5--|
+  //   |-5--x---0-2-x-1-x-1-x-1-1--x-x-|-3----5h7----7----7----7----|
+  //   |-3--x-3-----x------------------|----------------------------|
+  //   """
+  // }
 
   case class MenuItem(number: String, name: String, score: Score) {
     override def toString = s"$number. $name"
@@ -83,7 +82,7 @@ package object examples {
     MenuItem("3", "Scale",              scale(C3.s) * 4),
     MenuItem("4", "Scale With Echo",    echo(scale(C3.s) * 4, Duration.Eigth.dotted)),
     MenuItem("5", "Smoke On The Water", smokeOnTheWater),
-    MenuItem("6", "Twelve Bar Blues",   twelveBar),
-    MenuItem("7", "Freebird!",          freebird)
+    MenuItem("6", "Twelve Bar Blues",   twelveBar)//,
+    // MenuItem("7", "Freebird!",          freebird)
   )
 }

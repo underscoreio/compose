@@ -12,7 +12,7 @@ lazy val core = crossProject.
     )
   ).jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.7.0"
+      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
     )
   )
 

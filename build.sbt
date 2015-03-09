@@ -3,10 +3,12 @@ lazy val core = crossProject.
   settings(
     name          := "compose-core",
     organization  := "io.underscore",
-    scalaVersion  := "2.11.5"
+    scalaVersion  := "2.11.5",
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value
+    )
   ).jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "de.sciss"      %% "scalacollider" % "1.16.0",
       "org.scalatest" %% "scalatest"     % "2.2.1" % "test"
     )

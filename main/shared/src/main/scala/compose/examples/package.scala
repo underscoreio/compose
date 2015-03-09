@@ -35,13 +35,13 @@ package object examples {
     base | (base transpose 7)
 
   def smokeOnTheWater = (
-    (E4.s + r.s + G4.s + r.s + A4.e.dotted + E4.s + r.s + G4.s + r.s + As4.s + A4.q) |
-    (B3.s + r.s + D4.s + r.s + E4.e.dotted + B3.s + r.s + D4.s + r.s + F4.s  + E4.q) |
-    (E3.s + r.s + G3.s + r.s + A3.e.dotted + E3.s + r.s + G3.s + r.s + As3.s + A3.q)
+    (E4.e + r.e + G4.e + r.e + A4.q.dotted + E4.e + r.e + G4.e + r.e + As4.e + A4.h) |
+    (B3.e + r.e + D4.e + r.e + E4.q.dotted + B3.e + r.e + D4.e + r.e + F4.e  + E4.h) |
+    (E3.e + r.e + G3.e + r.e + A3.q.dotted + E3.e + r.e + G3.e + r.e + As3.e + A3.h)
   ) + (
-    (E4.s + r.s + G4.s + r.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
-    (B3.s + r.s + D4.s + r.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
-    (E3.s + r.s + G3.s + r.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
+    (E4.e + r.e + G4.e + r.e + A4.q.dotted + G4.e + r.e + E4.h.doubleDotted) |
+    (B3.e + r.e + D4.e + r.e + E4.q.dotted + D4.e + r.e + B3.h.doubleDotted) |
+    (E3.e + r.e + G3.e + r.e + A3.q.dotted + G3.e + r.e + E3.h.doubleDotted)
   )
 
   def twelveBar = {
@@ -59,18 +59,18 @@ package object examples {
     bar * 2
   }
 
-  // val freebird = {
-  //   import compose.tablature._
+  val freebird = {
+    import compose.tablature._
 
-  //   tab"""
-  //   |-------------------------------|----------------------------|
-  //   |-3------------3---3---3-3------|-5--x-----------------------|
-  //   |-4------------3-x-3-x-3-3--x-x-|-5--x-----------------------|
-  //   |-5--x-------x-3-x-3-x-3-3--x-x-|-5--x-----5----5----5----5--|
-  //   |-5--x---0-2-x-1-x-1-x-1-1--x-x-|-3----5h7----7----7----7----|
-  //   |-3--x-3-----x------------------|----------------------------|
-  //   """
-  // }
+    tab"""
+    |-------------------------------|----------------------------|
+    |-3------------3---3---3-3------|-5--x-----------------------|
+    |-4------------3-x-3-x-3-3--x-x-|-5--x-----------------------|
+    |-5--x-------x-3-x-3-x-3-3--x-x-|-5--x-----5----5----5----5--|
+    |-5--x---0-2-x-1-x-1-x-1-1--x-x-|-3----5h7----7----7----7----|
+    |-3--x-3-----x------------------|----------------------------|
+    """
+  }
 
   case class MenuItem(number: String, name: String, score: Score) {
     override def toString = s"$number. $name"
@@ -82,7 +82,7 @@ package object examples {
     MenuItem("3", "Scale",              scale(C3.s) * 4),
     MenuItem("4", "Scale With Echo",    echo(scale(C3.s) * 4, Duration.Eigth.dotted)),
     MenuItem("5", "Smoke On The Water", smokeOnTheWater),
-    MenuItem("6", "Twelve Bar Blues",   twelveBar)//,
-    // MenuItem("7", "Freebird!",          freebird)
+    MenuItem("6", "Twelve Bar Blues",   twelveBar),
+    MenuItem("7", "Freebird!",          freebird)
   )
 }

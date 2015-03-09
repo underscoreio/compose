@@ -11,6 +11,6 @@ import scala.scalajs.js.annotation.JSExport
 
   @JSExport def main(): Unit = {
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-    compose.player.Player.play(duellingBanjos)
+    compose.player.Player.play(smokeOnTheWater)
   }
 }

@@ -11,6 +11,9 @@ lazy val core = crossProject.
       "org.scalatest" %% "scalatest"     % "2.2.1" % "test"
     )
   ).jsSettings(
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.7.0"
+    )
   )
 
 lazy val coreJVM = core.jvm
@@ -30,16 +33,14 @@ lazy val main = crossProject.
       import compose._
     """.trim.stripMargin
   ).jsSettings(
+    persistLauncher         := true,
+    persistLauncher in Test := false
   )
 
 lazy val mainJVM = main.jvm
 
 lazy val mainJS  = main.js
 
-// // Handy shortcuts:
-// //  - `run`       runs `mainJVM/run`
-// //  - `console`   runs `mainJVM/console`
+run     <<= run     in (mainJVM, Compile)
 
-// run     <<= run     in (mainJVM, Compile)
-
-// console <<= console in (mainJVM, Compile)
+console <<= console in (mainJVM, Compile)

@@ -1,4 +1,4 @@
-package compose.supercollider
+package compose.player
 
 import org.scalatest._
 

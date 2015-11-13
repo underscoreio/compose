@@ -1,10 +1,14 @@
-scalaVersion := "2.11.5"
+scalaVersion in ThisBuild := "2.11.7"
 
-scalacOptions += "-feature"
+scalacOptions in ThisBuild += "-feature"
 
-libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  "de.sciss"      %% "scalacollider" % "1.16.0",
-  "org.scalatest" %% "scalatest"     % "2.2.1" % "test"
-)
+lazy val core = project.in(file("core"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "de.sciss"      %% "scalacollider" % "1.17.4",
+      "org.scalatest" %% "scalatest"     % "2.2.5" % "test"
+    )
+  )
 
+lazy val root = project.in(file(".")).dependsOn(core)

@@ -1,6 +1,7 @@
 package compose
 
 import compose.score.Score
+
 import scala.language.experimental.macros
 
 package object tab {

@@ -2,8 +2,10 @@ package compose.player
 
 import org.scalatest._
 
-class CommandSpec extends FlatSpec with Matchers {
-  val commands = Commands(Vector(
+class CommandSpec extends FreeSpec with Matchers {
+  import Implicits._
+
+  val commands = Vector(
     NoteOn(1, 440),
     Wait(100),
     NoteOff(1),
@@ -11,9 +13,9 @@ class CommandSpec extends FlatSpec with Matchers {
     NoteOn(5, 660),
     Wait(300),
     NoteOff(3)
-  ))
+  )
 
-  val otherCommands = Commands(Vector(
+  val otherCommands = Vector(
     NoteOn(10, 441),
     Wait(150),
     NoteOff(10),
@@ -21,14 +23,14 @@ class CommandSpec extends FlatSpec with Matchers {
     NoteOn(50, 661),
     Wait(50),
     NoteOff(30)
-  ))
+  )
 
-  "Commands.maxChannel" should "return the maximum channel" in {
+  "Commands.maxChannel should return the maximum channel" in {
     commands.maxChannel should equal(5)
   }
 
-  "Commands.renumberChannels" should "compress channel numbers down" in {
-    commands.renumberChannels should equal(Commands(Vector(
+  "Commands.renumberChannels should compress channel numbers down" in {
+    commands.renumberChannels(0) should equal(Vector(
       NoteOn(0, 440),
       Wait(100),
       NoteOff(0),
@@ -36,11 +38,11 @@ class CommandSpec extends FlatSpec with Matchers {
       NoteOn(2, 660),
       Wait(300),
       NoteOff(1)
-    )))
+    ))
   }
 
-  "Commands.renumberChannels" should "use a base index" in {
-    commands.renumberChannels(10) should equal(Commands(Vector(
+  "Commands.renumberChannels should use a base index" in {
+    commands.renumberChannels(10) should equal(Vector(
       NoteOn(10, 440),
       Wait(100),
       NoteOff(10),
@@ -48,11 +50,11 @@ class CommandSpec extends FlatSpec with Matchers {
       NoteOn(12, 660),
       Wait(300),
       NoteOff(11)
-    )))
+    ))
   }
 
-  "Commands.merge" should "merge channel sequences" in {
-    (commands merge otherCommands) should equal(Commands(Vector(
+  "Commands.merge should merge channel sequences" in {
+    (commands merge otherCommands) should equal(Vector(
       NoteOn(0,440.0),
       NoteOn(3,441.0),
       Wait(100),
@@ -67,7 +69,6 @@ class CommandSpec extends FlatSpec with Matchers {
       NoteOn(2,660.0),
       Wait(300),
       NoteOff(1)
-    )))
+    ))
   }
-
 }

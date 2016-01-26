@@ -5,6 +5,7 @@ case class Duration(value: Int) {
   def doubleDotted = Duration(value *  7 / 4)
   def tripleDotted = Duration(value * 15 / 8)
   def *(n: Int)    = Duration(value * n)
+  def /(n: Int)    = Duration(value / n)
 }
 
 object Duration {

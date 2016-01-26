@@ -5,6 +5,8 @@ created with [SuperCollider] and [ScalaCollider].
 
 Copyright 2015 Dave Gurnell. Licensed [GPLv3].
 
+[![Build Status](https://travis-ci.org/underscoreio/compose.svg?branch=develop)](https://travis-ci.org/underscoreio/compose)
+
 ## Setup
 
 1. Install [SuperCollider]

@@ -3,7 +3,24 @@ package compose.core
 sealed trait Score {
   def +(that: Score) = SeqScore(this, that)
   def |(that: Score) = ParScore(this, that)
-  def *(num: Int) = (1 until num).foldLeft[Score](this)((a, b) => a + this)
+  def repeat(num: Int) =
+    (1 until num).foldLeft[Score](this)((a, b) => a + this)
+
+  def halfTime: Score = this match {
+    case EmptyScore      => EmptyScore
+    case NoteScore(n, d) => NoteScore(n, d * 2)
+    case RestScore(d)    => RestScore(d * 2)
+    case SeqScore(a, b)  => SeqScore(a.halfTime, b.halfTime)
+    case ParScore(a, b)  => ParScore(a.halfTime, b.halfTime)
+  }
+
+  def doubleTime: Score = this match {
+    case EmptyScore      => EmptyScore
+    case NoteScore(n, d) => NoteScore(n, d / 2)
+    case RestScore(d)    => RestScore(d / 2)
+    case SeqScore(a, b)  => SeqScore(a.doubleTime, b.doubleTime)
+    case ParScore(a, b)  => ParScore(a.doubleTime, b.doubleTime)
+  }
 
   def transpose(t: Int): Score = this match {
     case EmptyScore      => EmptyScore

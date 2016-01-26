@@ -1,20 +1,16 @@
 lazy val core = crossProject.
   crossType(CrossType.Full).
   settings(
-    name          := "compose-core",
-    organization  := "io.underscore",
-    scalaVersion  := "2.11.5",
-    libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value
-    )
+    name                 := "compose-core",
+    organization         := "io.underscore",
+    scalaVersion         := "2.11.7",
+    libraryDependencies  += "org.scala-lang" % "scala-reflect" % scalaVersion.value
   ).jvmSettings(
-    libraryDependencies ++= Seq(
-      "de.sciss"      %% "scalacollider" % "1.16.0",
-      "org.scalatest" %% "scalatest"     % "2.2.1" % "test"
-    )
+    libraryDependencies += "de.sciss"       %% "scalacollider" % "1.16.0",
+    libraryDependencies += "org.scalatest"  %% "scalatest"     % "2.2.6" % "test"
   ).jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+      "org.scala-js" %%% "scalajs-dom" % "0.8.1"
     )
   )
 
@@ -26,10 +22,11 @@ lazy val main = crossProject.
   crossType(CrossType.Full).
   dependsOn(core).
   settings(
-    name          := "compose",
-    organization  := "io.underscore",
-    scalaVersion  := "2.11.5",
-    scalacOptions += "-feature"
+    name                := "compose",
+    organization        := "io.underscore",
+    scalaVersion        := "2.11.7",
+    scalacOptions       += "-feature",
+    libraryDependencies += "org.scalatest"  %% "scalatest"     % "2.2.6" % "test"
   ).jvmSettings(
     initialCommands in console := """
       import compose._

@@ -3,7 +3,7 @@ package compose
 import compose.core.{ Rest => r, _ }
 import compose.core.Note._
 
-package object examples {
+object examples {
   def duellingBanjos =
     ((E3.e + F3.e + G3.q + E3.q + F3.q + D3.q + E3.q + C3.q + D3.h) transpose 12) + r.h +
     ((G2.q + C3.q + C3.q + D3.q + E3.q + C3.q + E3.q + D3.h       ) transpose 12)
@@ -51,12 +51,12 @@ package object examples {
       ( E3.q | Cs4.q ) +
       ( E3.s | B3.s  )
 
-    (bar transpose 0) * 4 +
-    (bar transpose 5) * 2 +
-    (bar transpose 0) * 2 +
-    (bar transpose 7) * 1 +
-    (bar transpose 5) * 1 +
-    (bar transpose 0) * 2
+    (bar transpose 0 repeat 4) +
+    (bar transpose 5 repeat 2) +
+    (bar transpose 0 repeat 2) +
+    (bar transpose 7 repeat 1) +
+    (bar transpose 5 repeat 1) +
+    (bar transpose 0 repeat 2)
   }
 
   val freebird = {
@@ -79,8 +79,8 @@ package object examples {
   val menu = List(
     MenuItem("1", "Duelling Banjos",    duellingBanjos),
     MenuItem("2", "Chord Progression",  chordProgression),
-    MenuItem("3", "Scale",              scale(C3.s) * 4),
-    MenuItem("4", "Scale With Echo",    echo(scale(C3.s) * 4, Duration.Eigth.dotted)),
+    MenuItem("3", "Scale",              scale(C3.s) repeat 4),
+    MenuItem("4", "Scale With Echo",    echo(scale(C3.s) repeat 4, Duration.Eigth.dotted)),
     MenuItem("5", "Smoke On The Water", smokeOnTheWater),
     MenuItem("6", "Twelve Bar Blues",   twelveBar),
     MenuItem("7", "Freebird!",          freebird)

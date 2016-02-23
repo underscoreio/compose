@@ -2,16 +2,15 @@ package compose
 
 import compose.examples._
 import compose.player._
-import compose.player.Implicits._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends App {
-  Player.withPlayer(4) { player =>
-    implicit val tempo = Tempo(120)
+  ScPlayer.withPlayer(4) { player =>
     while (true) {
       for (item <- menu) println(item)
       val number = io.StdIn.readLine()
       menu.find(_.number == number) match {
-        case Some(item) => player.play(item.score)
+        case Some(item) => player.play(item.score, Tempo(120))
         case _ => // Do nothing
       }
     }

@@ -1,11 +1,14 @@
 package compose.player
 
+import algebra.Order
+import compose.core._
+
 sealed trait Command
-case class PitchOn(channel: Int, freq: Double) extends Command
-case class PitchOff(channel: Int) extends Command
-case class Wait(millis: Long) extends Command {
-  def >(that: Wait) = this.millis > that.millis
-  def <(that: Wait) = this.millis < that.millis
-  def +(that: Wait) = Wait(this.millis + that.millis)
-  def -(that: Wait) = Wait(this.millis - that.millis)
+
+object Command {
+  case class NoteOn(id: Int, pitch: Pitch) extends Command
+  case class NoteOff(id: Int) extends Command
+  case class Wait(duration: Duration) extends Command
+
+  implicit val waitOrder: Order[Wait] = Order.by(_.duration)
 }

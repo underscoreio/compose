@@ -81,7 +81,7 @@ object examples {
     MenuItem("1", "Duelling Banjos",    duellingBanjos),
     MenuItem("2", "Chord Progression",  chordProgression),
     MenuItem("3", "Scale",              scale(C3.s) repeat 4),
-    MenuItem("4", "Scale With Echo",    echo(scale(C3.s) repeat 4, Duration.Eigth.dotted)),
+    MenuItem("4", "Scale With Echo",    echo(scale(C3.s) repeat 4, Duration.Eighth.dotted)),
     MenuItem("5", "Smoke On The Water", smokeOnTheWater),
     MenuItem("6", "Twelve Bar Blues",   twelveBar),
     MenuItem("7", "Freebird!",          freebird)

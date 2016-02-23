@@ -4,12 +4,13 @@ case class Pitch(value: Int) {
   def transpose(transpose: Int): Pitch =
     Pitch(value + transpose)
 
-  def apply(duration: Duration): Score.Note = Score.Note(this, duration)
+  def frequency: Double =
+    math.pow(2, value / 12.0) * 440.0
 
   def w = Score.Note(this, Duration.Whole)
   def h = Score.Note(this, Duration.Half)
   def q = Score.Note(this, Duration.Quarter)
-  def e = Score.Note(this, Duration.Eigth)
+  def e = Score.Note(this, Duration.Eighth)
   def s = Score.Note(this, Duration.Sixteenth)
   def t = Score.Note(this, Duration.ThirtySecond)
 }

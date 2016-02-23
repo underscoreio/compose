@@ -7,18 +7,21 @@ lazy val core = crossProject.
   settings(
     name := "compose-core",
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value
+      "org.typelevel" %% "cats"          % "0.4.1",
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scalatest" %% "scalatest"     % "2.2.6" % Test
     )
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
       "de.sciss"      %% "scalacollider" % "1.16.0",
-      "org.scalatest" %% "scalatest"     % "2.2.6" % "test"
+      "org.scalatest" %% "scalatest"     % "2.2.6" % Test
     )
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.9.0"
+      "org.typelevel" %%% "cats"         % "0.4.1",
+      "org.scala-js"  %%% "scalajs-dom"  % "0.9.0"
     )
   )
 

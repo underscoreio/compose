@@ -1,70 +1,53 @@
 package compose.player
 
 import compose.core._
-
-import org.scalajs.dom
-import scala.concurrent._
+import org.scalajs.dom.{XMLHttpRequest, Event}
+import org.scalajs.dom.ext.Ajax
+import scala.concurrent.{ExecutionContext => EC, _}
 import scala.scalajs.js
 
-object Player {
-  import Implicits._
+class WebAudioPlayer(
+  sampleUrl: String = "web-audio-spike/cat9.wav",
+  ctx: AudioContext = new AudioContext()
+) extends Player {
+  import Command._
 
-  type EC = ExecutionContext
+  case class State(ctx: AudioContext, buffer: AudioBuffer)
 
-  def play(score: Score)(implicit ec: EC): Future[Unit] = {
-    val ctx = new AudioContext()
-    implicit val tempo = 120.bpm
-
-    loadSound(ctx, "web-audio-spike/cat9.wav").
-      flatMap(playCommands(ctx, _, score.compile))
-  }
-
-  def loadSound(ctx: AudioContext, url: String): Future[AudioBuffer] = {
-    var request = new dom.XMLHttpRequest()
-    var promise = Promise[AudioBuffer]
-
-    request.open("GET", url, true)
+  def initialise: Future[State] = {
+    var request = new XMLHttpRequest()
+    request.open("GET", sampleUrl, true)
     request.responseType = "arraybuffer"
 
-    request.onload = (evt: dom.Event) =>
-      ctx.decodeAudioData(request.response, (buffer: AudioBuffer) => promise success buffer)
+    var promise = Promise[State]
+    request.onload = (evt: Event) =>
+      ctx.decodeAudioData(request.response, (buffer: AudioBuffer) => promise.success(State(ctx, buffer)))
 
     request.send()
-
     promise.future
   }
 
-  def playCommands(ctx: AudioContext, buffer: AudioBuffer, commands: Seq[Command])(implicit ec: EC): Future[Unit] = {
-    commands match {
-      case Nil =>
-        Future.successful(())
+  def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
+    cmd match {
+      case cmd: NoteOn =>
+        Future {
+          var source = state.ctx.createBufferSource()
+          source.buffer = state.buffer
+          source.connect(state.ctx.destination)
+          source.playbackRate.setValueAtTime(cmd.pitch.frequency / 220.0, 0)
+          source.start(0)
+          state
+        }
 
-      case (head: PitchOn) +: tail =>
-        playPitchOn(ctx, buffer, head).flatMap(_ => playCommands(ctx, buffer, tail))
+      case cmd: NoteOff =>
+        Future.successful(state)
 
-      case (head: Wait) +: tail =>
-        playWait(ctx, head).flatMap(_ => playCommands(ctx, buffer, tail))
-
-      case (head: PitchOff) +: tail =>
-        playCommands(ctx, buffer, tail)
+      case cmd: Wait =>
+        val promise = Promise[State]
+        js.timers.setTimeout(tempo.milliseconds(cmd.duration)) {
+          promise.success(state)
+        }
+        promise.future
     }
-  }
-
-  def playPitchOn(ctx: AudioContext, buffer: AudioBuffer, cmd: PitchOn)(implicit ec: EC): Future[Unit] = {
-    Future {
-      var source = ctx.createBufferSource()
-      source.buffer = buffer
-      source.connect(ctx.destination)
-      source.playbackRate.setValueAtTime(cmd.freq / 220.0, 0)
-      source.start(0)
-    }
-  }
-
-  def playWait(ctx: AudioContext, cmd: Wait)(implicit ec: EC): Future[Unit] = {
-    val promise = Promise[Unit]
-    js.timers.setTimeout(cmd.millis.toInt) {
-      promise.success(())
-    }
-    promise.future
   }
 }

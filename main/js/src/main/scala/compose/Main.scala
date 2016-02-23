@@ -2,7 +2,6 @@ package compose
 
 import compose.examples._
 import compose.player._
-import compose.player.Implicits._
 
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
@@ -11,6 +10,7 @@ import scala.scalajs.js.annotation.JSExport
 
   @JSExport def main(): Unit = {
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-    compose.player.Player.play(smokeOnTheWater)
+    val player = new compose.player.WebAudioPlayer()
+    player.play(smokeOnTheWater, Tempo(120))
   }
 }

@@ -1,65 +1,77 @@
 package compose.player
 
+import compose.core._
 import de.sciss.synth._
 import de.sciss.synth.ugen.{ Pitch => _, _ }
 import de.sciss.synth.Ops._
+import java.util.{Timer, TimerTask}
+import scala.concurrent.{ExecutionContext => EC, _}
 
-import compose.core._
-
-object Player {
+object ScPlayer {
   val Freq = "freq"
   val Amp  = "amp"
 
-  def frequency(pitch: Pitch): Double =
-    math.pow(2, pitch.value / 12.0) * 440
-
-  def apply(numChannels: Int = 4)(implicit server: Server): Player = {
-    val synthDef = SynthDef(s"channel") {
-      val freq = Freq.kr(440)
-      val amp  = Amp.kr(0.0)
-      val osc  = SinOsc.ar(freq, 0.0) * amp
-      Out.ar(0, List(osc, osc))
-    }
-
-    val channels: Seq[Synth] =
-      (0 to numChannels).map(_ => synthDef.play())
-
-    Player(channels.toArray)
+  val sine = SynthDef(s"sine") {
+    val freq = Freq.kr(440)
+    val amp  = Amp.kr(0.0)
+    val osc  = SinOsc.ar(freq, 0.0) * amp
+    Out.ar(0, List(osc, osc))
   }
 
-  def withPlayer(numChannels: Int)(func: Player => Unit): Unit = {
-    Server.run(Server.Config()) { implicit server =>
-      val player = Player(numChannels)
+  def withPlayer[A](numChannels: Int = 4, synthDef: SynthDef = sine)(func: Player => A) =
+    Server.run { server =>
+      val player = new ScPlayer(numChannels, synthDef, server)
       try {
         func(player)
       } finally {
         player.free
       }
     }
-  }
 }
 
-case class Player(val channels: Array[Synth])(implicit val server: Server) {
-  import Player._
-  import Implicits._
+class ScPlayer(numChannels: Int, synthDef: SynthDef, server: Server) extends Player {
+  import ScPlayer._
+  import Command._
 
-  val numChannels = channels.length
+  case class State(available: Seq[Synth], playing: Map[Int, Synth])
 
-  def play(cmd: Command): Unit = {
-    println(cmd)
+  val timer = new Timer()
+  val channels = (0 to numChannels).map(_ => synthDef.play())
+
+  def free: Unit =
+    channels.foreach(_.free)
+
+  def initialise: Future[State] =
+    Future.successful(State(channels, Map.empty))
+
+  override def shutdown(state: State): Future[State] =
+    Future.successful(State(Nil, Map.empty))
+
+  def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
     cmd match {
-      case PitchOn(num, freq) if num < numChannels => channels(num).set(Amp -> 1.0, Freq -> freq)
-      case PitchOff(num)      if num < numChannels => channels(num).set(Amp -> 0.1)
-      case Wait(millis)                           => Thread.sleep(millis)
+      case NoteOn(id, pitch) =>
+        state.available match {
+          case Seq() => Future.successful(state)
+
+          case channel +: remaining =>
+            channel.set(Amp -> 1.0, Freq -> pitch.frequency)
+            Future.successful(State(remaining, state.playing + (id -> channel)))
+        }
+
+      case NoteOff(id) =>
+        state.playing.get(id) match {
+          case Some(channel) =>
+            channel.set(Amp -> 0.1)
+            Future.successful(State(state.available :+ channel, state.playing - id))
+        }
+
+      case Wait(dur) =>
+        val promise = Promise[State]
+        val task = new TimerTask {
+          def run(): Unit = promise.success(state)
+        }
+        timer.schedule(task, tempo.milliseconds(dur))
+        promise.future
     }
   }
-
-  def play(cmds: Seq[Command]): Unit =
-    cmds.foreach(play _)
-
-  def play(score: Score)(implicit tempo: Tempo): Unit =
-    play(score.compile)
-
-  def free =
-    channels.foreach(_.free)
 }

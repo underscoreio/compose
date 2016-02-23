@@ -86,7 +86,7 @@ object Score {
     def w = Rest(Duration.Whole)
     def h = Rest(Duration.Half)
     def q = Rest(Duration.Quarter)
-    def e = Rest(Duration.Eigth)
+    def e = Rest(Duration.Eighth)
     def s = Rest(Duration.Sixteenth)
     def t = Rest(Duration.ThirtySecond)
   }

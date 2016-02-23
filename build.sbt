@@ -1,11 +1,14 @@
-organization in ThisBuild := "io.underscore"
+organization in ThisBuild := "com.davegurnell"
 version      in ThisBuild := "0.1.0"
 scalaVersion in ThisBuild := "2.11.7"
 
 lazy val core = crossProject.
   crossType(CrossType.Full).
   settings(
-    name := "compose-core",
+    name                 := "compose-core",
+    bintrayOrganization  := Some("davegurnell"),
+    bintrayRepository    := "maven",
+    licenses             += ("Apache-2.0", url("http://apache.org/licenses/LICENSE-2.0")),
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats"          % "0.4.1",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,

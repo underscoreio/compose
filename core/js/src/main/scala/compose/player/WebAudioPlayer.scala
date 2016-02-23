@@ -3,6 +3,8 @@ package compose.player
 import compose.core._
 import org.scalajs.dom.{XMLHttpRequest, Event}
 import org.scalajs.dom.ext.Ajax
+import org.scalajs.dom.raw.{AudioContext, AudioBuffer}
+import scala.scalajs.js.typedarray.ArrayBuffer
 import scala.concurrent.{ExecutionContext => EC, _}
 import scala.scalajs.js
 
@@ -21,7 +23,10 @@ class WebAudioPlayer(
 
     var promise = Promise[State]
     request.onload = (evt: Event) =>
-      ctx.decodeAudioData(request.response, (buffer: AudioBuffer) => promise.success(State(ctx, buffer)))
+      ctx.decodeAudioData(
+        request.response.asInstanceOf[ArrayBuffer],
+        (buffer: AudioBuffer) => promise.success(State(ctx, buffer))
+      )
 
     request.send()
     promise.future

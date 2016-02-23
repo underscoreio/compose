@@ -1,13 +1,17 @@
 {
-  "folders":
-  [
-    {
-      "follow_symlinks": true,
-      "path": ".",
-      "folder_exclude_patterns": [
-        ".git"//,
-        //"project"
-      ]
-    }
-  ]
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				".git"
+			],
+			"follow_symlinks": true,
+			"path": "."
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Users/dave/dev/projects/doodlejs"
+		}
+	]
 }

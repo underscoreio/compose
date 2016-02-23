@@ -1,0 +1,8 @@
+package compose.player
+
+import compose.core.Duration
+
+case class Tempo(bpm: Int = 120) {
+  def milliseconds(dur: Duration)(implicit tempo: Tempo): Long =
+    ((dur.value / 64.0) * (120.0 / tempo.bpm) * 2000).toLong
+}

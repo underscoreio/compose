@@ -3,10 +3,8 @@ package compose.player
 import compose.core._
 import scala.concurrent.{ExecutionContext => EC, _}
 
-trait Player {
+trait Player[State] {
   import Command._
-
-  type State
 
   def initialise: Future[State]
 

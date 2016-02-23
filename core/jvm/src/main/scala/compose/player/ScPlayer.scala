@@ -18,7 +18,7 @@ object ScPlayer {
     Out.ar(0, List(osc, osc))
   }
 
-  def withPlayer[A](numChannels: Int = 4, synthDef: SynthDef = sine)(func: Player => A) =
+  def withPlayer[A](numChannels: Int = 4, synthDef: SynthDef = sine)(func: ScPlayer => A) =
     Server.run { server =>
       val player = new ScPlayer(numChannels, synthDef, server)
       try {
@@ -27,13 +27,13 @@ object ScPlayer {
         player.free
       }
     }
-}
-
-class ScPlayer(numChannels: Int, synthDef: SynthDef, server: Server) extends Player {
-  import ScPlayer._
-  import Command._
 
   case class State(available: Seq[Synth], playing: Map[Int, Synth])
+}
+
+class ScPlayer(numChannels: Int, synthDef: SynthDef, server: Server) extends Player[ScPlayer.State] {
+  import ScPlayer._
+  import Command._
 
   val timer = new Timer()
   val channels = (0 to numChannels).map(_ => synthDef.play())

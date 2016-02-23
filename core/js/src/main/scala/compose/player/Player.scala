@@ -2,9 +2,9 @@ package compose.player
 
 import compose.core._
 
+import org.scalajs.dom
 import scala.concurrent._
 import scala.scalajs.js
-import org.scalajs.dom
 
 object Player {
   import Implicits._
@@ -39,18 +39,18 @@ object Player {
       case Nil =>
         Future.successful(())
 
-      case (head: NoteOn) +: tail =>
-        playNoteOn(ctx, buffer, head).flatMap(_ => playCommands(ctx, buffer, tail))
+      case (head: PitchOn) +: tail =>
+        playPitchOn(ctx, buffer, head).flatMap(_ => playCommands(ctx, buffer, tail))
 
       case (head: Wait) +: tail =>
         playWait(ctx, head).flatMap(_ => playCommands(ctx, buffer, tail))
 
-      case (head: NoteOff) +: tail =>
+      case (head: PitchOff) +: tail =>
         playCommands(ctx, buffer, tail)
     }
   }
 
-  def playNoteOn(ctx: AudioContext, buffer: AudioBuffer, cmd: NoteOn)(implicit ec: EC): Future[Unit] = {
+  def playPitchOn(ctx: AudioContext, buffer: AudioBuffer, cmd: PitchOn)(implicit ec: EC): Future[Unit] = {
     Future {
       var source = ctx.createBufferSource()
       source.buffer = buffer
@@ -62,7 +62,9 @@ object Player {
 
   def playWait(ctx: AudioContext, cmd: Wait)(implicit ec: EC): Future[Unit] = {
     val promise = Promise[Unit]
-    dom.setTimeout((() => promise success ()), cmd.millis.toInt)
+    js.timers.setTimeout(cmd.millis.toInt) {
+      promise.success(())
+    }
     promise.future
   }
 }

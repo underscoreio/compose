@@ -9,7 +9,7 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
   import c.universe._
 
   import Duration.{ Sixteenth => baseDuration }
-  import Note.{ E3 => baseNote }
+  import Pitch.{ E3 => basePitch }
 
   def tabMacro(args: c.Tree *): c.Tree =
     if(args.length == 0) {
@@ -39,11 +39,11 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
   }
 
   def render(score: Score): c.Tree = score match {
-    case EmptyScore                      => q"EmptyScore"
-    case NoteScore(Note(n), Duration(d)) => q"NoteScore(Note($n), Duration($d))"
-    case RestScore(Duration(d))          => q"RestScore(Duration($d))"
-    case SeqScore(a, b)                  => q"SeqScore(${render(a)}, ${render(b)})"
-    case ParScore(a, b)                  => q"ParScore(${render(a)}, ${render(b)})"
+    case Score.Empty                      => q"Score.Empty"
+    case Score.Note(Pitch(n), Duration(d)) => q"Score.Note(Pitch($n), Duration($d))"
+    case Score.Rest(Duration(d))          => q"Score.Rest(Duration($d))"
+    case Score.Seq(a, b)                  => q"Score.Seq(${render(a)}, ${render(b)})"
+    case Score.Par(a, b)                  => q"Score.Par(${render(a)}, ${render(b)})"
   }
 
   def parse(lines: List[String]): Score = {
@@ -59,43 +59,43 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
         ) + parse(rest)
 
       case Nil =>
-        EmptyScore
+        Score.Empty
 
       case _ =>
         fail("Incorrect number of lines: " + lines)
     }
   }
 
-  def parseString(str: String, openNote: Int): Score = {
+  def parseString(str: String, openPitch: Int): Score = {
     @tailrec def loop(str: String, accum: StringAccum): Score =
       str match {
-        case ""                          => accum.completeNote.score
-        case StartsWithFret(fret , rest) => loop(rest, accum.completeNote.startNote(openNote + fret))
-        case StartsWithChar('x'  , rest) => loop(rest, accum.completeNote.startRest)
+        case ""                          => accum.completePitch.score
+        case StartsWithFret(fret , rest) => loop(rest, accum.completePitch.startPitch(openPitch + fret))
+        case StartsWithChar('x'  , rest) => loop(rest, accum.completePitch.startRest)
         case StartsWithChar('|'  , rest) => loop(rest, accum)
         case StartsWithChar(' '  , rest) => loop(rest, accum)
-        case StartsWithChar(_    , rest) => loop(rest, accum.extendNote)
+        case StartsWithChar(_    , rest) => loop(rest, accum.extendPitch)
       }
 
-    loop(str, StringAccum(None, 0, EmptyScore))
+    loop(str, StringAccum(None, 0, Score.Empty))
   }
 
-  case class StringAccum(note: Option[Note], length: Int, score: Score) {
-    def startNote(offset: Int): StringAccum =
-      copy(note = Some(baseNote transpose offset), length = 1)
+  case class StringAccum(pitch: Option[Pitch], length: Int, score: Score) {
+    def startPitch(offset: Int): StringAccum =
+      copy(pitch = Some(basePitch transpose offset), length = 1)
 
     def startRest: StringAccum =
-      copy(note = None, length = 1)
+      copy(pitch = None, length = 1)
 
-    def extendNote: StringAccum =
+    def extendPitch: StringAccum =
       copy(length = length + 1)
 
-    def completeNote: StringAccum =
+    def completePitch: StringAccum =
       if(length > 0) {
-        note match {
-          case Some(n) => copy(note = None, length = 0, score = score + NoteScore(n, baseDuration * length))
-          case _       => copy(note = None, length = 0, score = score + RestScore(baseDuration * length))
+        pitch match {
+          case Some(p) => copy(pitch = None, length = 0, score = score + Score.Note(p, baseDuration * length))
+          case _       => copy(pitch = None, length = 0, score = score + Score.Rest(baseDuration * length))
         }
-      } else copy(note = None, length = 0)
+      } else copy(pitch = None, length = 0)
   }
 }

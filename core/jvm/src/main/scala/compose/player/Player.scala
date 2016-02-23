@@ -1,7 +1,7 @@
 package compose.player
 
 import de.sciss.synth._
-import de.sciss.synth.ugen._
+import de.sciss.synth.ugen.{ Pitch => _, _ }
 import de.sciss.synth.Ops._
 
 import compose.core._
@@ -10,8 +10,8 @@ object Player {
   val Freq = "freq"
   val Amp  = "amp"
 
-  def frequency(note: Note): Double =
-    math.pow(2, note.value / 12.0) * 440
+  def frequency(pitch: Pitch): Double =
+    math.pow(2, pitch.value / 12.0) * 440
 
   def apply(numChannels: Int = 4)(implicit server: Server): Player = {
     val synthDef = SynthDef(s"channel") {
@@ -48,8 +48,8 @@ case class Player(val channels: Array[Synth])(implicit val server: Server) {
   def play(cmd: Command): Unit = {
     println(cmd)
     cmd match {
-      case NoteOn(num, freq) if num < numChannels => channels(num).set(Amp -> 1.0, Freq -> freq)
-      case NoteOff(num)      if num < numChannels => channels(num).set(Amp -> 0.1)
+      case PitchOn(num, freq) if num < numChannels => channels(num).set(Amp -> 1.0, Freq -> freq)
+      case PitchOff(num)      if num < numChannels => channels(num).set(Amp -> 0.1)
       case Wait(millis)                           => Thread.sleep(millis)
     }
   }

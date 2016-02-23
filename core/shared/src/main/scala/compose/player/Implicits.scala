@@ -8,23 +8,23 @@ object Implicits {
     def bpm = Tempo(num)
   }
 
-  implicit class NoteOps(val note: Note) extends AnyVal {
+  implicit class PitchOps(val pitch: Pitch) extends AnyVal {
     def frequency: Double =
-      math.pow(2, note.value / 12.0) * 440
+      math.pow(2, pitch.value / 12.0) * 440
   }
 
   implicit class ScoreOps(val score: Score) extends AnyVal {
     def compile(implicit tempo: Tempo): Seq[Command] =
       score match {
-        case EmptyScore           => Vector()
-        case SeqScore(a, b)       => a.compile ++ b.compile
-        case ParScore(a, b)       => a.compile merge b.compile
-        case RestScore(dur)       => Vector(Wait(tempo.millis(dur)))
-        case NoteScore(note, dur) =>
+        case Score.Empty     => Vector()
+        case Score.Seq(a, b) => a.compile ++ b.compile
+        case Score.Par(a, b) => a.compile merge b.compile
+        case Score.Rest(dur) => Vector(Wait(tempo.millis(dur)))
+        case Score.Note(pitch, dur) =>
           Vector(
-            NoteOn(0, note.frequency),
+            PitchOn(0, pitch.frequency),
             Wait(tempo.millis(dur)),
-            NoteOff(0)
+            PitchOff(0)
           )
       }
   }
@@ -34,8 +34,8 @@ object Implicits {
 
     def maxChannel: Int =
       commands.collect {
-        case NoteOn(channel, _) => channel
-        case NoteOff(channel)   => channel
+        case PitchOn(channel, _) => channel
+        case PitchOff(channel)   => channel
       } match {
         case Seq() => 0
         case seq   => seq.max
@@ -43,8 +43,8 @@ object Implicits {
 
     def renumberChannels(base: Int): Seq[Command] = {
       val original = commands.collect {
-        case NoteOn(channel, _) => channel
-        case NoteOff(channel)   => channel
+        case PitchOn(channel, _) => channel
+        case PitchOff(channel)   => channel
       }.distinct.sorted
 
       val renumber = original.zipWithIndex.map {
@@ -52,8 +52,8 @@ object Implicits {
       }.toMap
 
       commands map {
-        case NoteOn(channel, freq) => NoteOn(renumber(channel), freq)
-        case NoteOff(channel)      => NoteOff(renumber(channel))
+        case PitchOn(channel, freq) => PitchOn(renumber(channel), freq)
+        case PitchOff(channel)      => PitchOff(renumber(channel))
         case Wait(duration)        => Wait(duration)
       }
     }
@@ -61,18 +61,18 @@ object Implicits {
     def merge(that: Seq[Command]): Seq[Command] = {
       @tailrec def loop(a: Seq[Command], b: Seq[Command], accum: Seq[Command] = Seq.empty): Seq[Command] = {
         a match {
-          case (aHead: NoteOn) +: aTail =>
+          case (aHead: PitchOn) +: aTail =>
             loop(aTail, b, accum :+ aHead)
 
-          case (aHead: NoteOff) +: aTail =>
+          case (aHead: PitchOff) +: aTail =>
            loop(aTail, b, accum :+ aHead)
 
           case (aHead: Wait) +: aTail =>
             b match {
-              case (bHead: NoteOn) +: bTail =>
+              case (bHead: PitchOn) +: bTail =>
                 loop(a, bTail, accum :+ bHead)
 
-              case (bHead: NoteOff) +: bTail =>
+              case (bHead: PitchOff) +: bTail =>
                 loop(a, bTail, accum :+ bHead)
 
               case (bHead: Wait) +: bTail if aHead > bHead =>

@@ -1,7 +1,8 @@
 package compose
 
-import compose.core.{ Rest => r, _ }
-import compose.core.Note._
+import compose.core._
+import compose.core.Score.{ Rest => r }
+import compose.core.Pitch._
 
 object examples {
   def duellingBanjos =

@@ -2,8 +2,8 @@ package compose.core
 
 import org.scalatest._
 
-class NoteSpec extends FreeSpec with Matchers {
-  import Note._
+class PitchSpec extends FreeSpec with Matchers {
+  import Pitch._
 
   "A4 should have the correct number and frequency" in {
     A4.value should equal(0)

@@ -1,13 +1,14 @@
 package compose.tablature
 
 import compose.core._
+import compose.core.Score.{Rest => r}
 import org.scalatest._
 
 class TablatureSyntaxSpec extends FreeSpec with Matchers {
-  import Note._
+  import Pitch._
 
   "simple tab should compile correctly" in {
-    val openNotes =
+    val openPitchs =
       tab"""
       0
       0
@@ -16,7 +17,7 @@ class TablatureSyntaxSpec extends FreeSpec with Matchers {
       0
       0
       """
-    openNotes should equal(
+    openPitchs should equal(
       E5.s |
       B4.s |
       G4.s |
@@ -47,20 +48,20 @@ class TablatureSyntaxSpec extends FreeSpec with Matchers {
       """
     smokeOnTheWater should equal(
       (
-        (Rest.w) |
-        (Rest.w) |
-        (Rest.w) |
-        (E4.s + Rest.s + G4.s + Rest.s + A4.e.dotted + E4.s + Rest.s + G4.s + Rest.s + As4.s + A4.q) |
-        (B3.s + Rest.s + D4.s + Rest.s + E4.e.dotted + B3.s + Rest.s + D4.s + Rest.s + F4.s  + E4.q) |
-        (E3.s + Rest.s + G3.s + Rest.s + A3.e.dotted + E3.s + Rest.s + G3.s + Rest.s + As3.s + A3.q)
+        (r.w) |
+        (r.w) |
+        (r.w) |
+        (E4.s + r.s + G4.s + r.s + A4.e.dotted + E4.s + r.s + G4.s + r.s + As4.s + A4.q) |
+        (B3.s + r.s + D4.s + r.s + E4.e.dotted + B3.s + r.s + D4.s + r.s + F4.s  + E4.q) |
+        (E3.s + r.s + G3.s + r.s + A3.e.dotted + E3.s + r.s + G3.s + r.s + As3.s + A3.q)
       ).halfTime +
       (
-        (Rest.w) |
-        (Rest.w) |
-        (Rest.w) |
-        (E4.s + Rest.s + G4.s + Rest.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
-        (B3.s + Rest.s + D4.s + Rest.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
-        (E3.s + Rest.s + G3.s + Rest.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
+        (r.w) |
+        (r.w) |
+        (r.w) |
+        (E4.s + r.s + G4.s + r.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
+        (B3.s + r.s + D4.s + r.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
+        (E3.s + r.s + G3.s + r.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
       ).halfTime
     )
   }

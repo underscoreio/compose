@@ -4,7 +4,7 @@ import compose.core._
 import org.scalatest._
 
 class StringHelpersSpec extends FlatSpec with Matchers with StringHelpers {
-  import Note._
+  import Pitch._
 
   "StartsWithChar" should "handle an empty string" in {
     ("" match {

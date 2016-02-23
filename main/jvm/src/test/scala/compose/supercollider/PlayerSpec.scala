@@ -3,7 +3,7 @@ package compose.player
 import org.scalatest._
 
 class PlayerSpec extends FlatSpec with Matchers {
-  import compose.core.Note._
+  import compose.core.Pitch._
 
   "A4" should "have the correct number and frequency" in {
     Player.frequency(A4) should equal(440)

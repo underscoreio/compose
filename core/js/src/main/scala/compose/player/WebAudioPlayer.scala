@@ -8,13 +8,17 @@ import scala.scalajs.js.typedarray.ArrayBuffer
 import scala.concurrent.{ExecutionContext => EC, _}
 import scala.scalajs.js
 
+object WebAudioPlayer {
+  case class State(context: AudioContext, buffer: AudioBuffer, playing: Set[Command.NoteOn])
+}
+
 class WebAudioPlayer(
   sampleUrl: String = "web-audio-spike/cat9.wav",
-  ctx: AudioContext = new AudioContext()
-) extends Player {
+  context: AudioContext = new AudioContext(),
+  callback: Option[(WebAudioPlayer.State, Command) => Unit] = None
+) extends Player[WebAudioPlayer.State] {
+  import WebAudioPlayer._
   import Command._
-
-  case class State(ctx: AudioContext, buffer: AudioBuffer)
 
   def initialise: Future[State] = {
     var request = new XMLHttpRequest()
@@ -23,9 +27,9 @@ class WebAudioPlayer(
 
     var promise = Promise[State]
     request.onload = (evt: Event) =>
-      ctx.decodeAudioData(
+      context.decodeAudioData(
         request.response.asInstanceOf[ArrayBuffer],
-        (buffer: AudioBuffer) => promise.success(State(ctx, buffer))
+        (buffer: AudioBuffer) => promise.success(State(context, buffer, Set.empty))
       )
 
     request.send()
@@ -33,19 +37,19 @@ class WebAudioPlayer(
   }
 
   def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
-    cmd match {
+    (cmd match {
       case cmd: NoteOn =>
         Future {
-          var source = state.ctx.createBufferSource()
+          var source = state.context.createBufferSource()
           source.buffer = state.buffer
-          source.connect(state.ctx.destination)
+          source.connect(state.context.destination)
           source.playbackRate.setValueAtTime(cmd.pitch.frequency / 220.0, 0)
           source.start(0)
-          state
+          state.copy(playing = state.playing + cmd)
         }
 
       case cmd: NoteOff =>
-        Future.successful(state)
+        Future.successful(state.copy(playing = state.playing filterNot (_.id == cmd.id)))
 
       case cmd: Wait =>
         val promise = Promise[State]
@@ -53,6 +57,9 @@ class WebAudioPlayer(
           promise.success(state)
         }
         promise.future
+    }) map { state =>
+      callback.foreach(_(state, cmd))
+      state
     }
   }
 }

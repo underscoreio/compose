@@ -19,51 +19,34 @@ object Compile {
 
   private[player] def compile(score: Score): CompilerState[Seq[Command]] =
     score match {
-      case Score.Empty            => State.pure(Vector())
-      case Score.Seq(a, b)        => for {
-                                       a <- compile(a)
-                                       b <- compile(b)
-                                     } yield a ++ b
-      case Score.Par(a, b)        => for {
-                                       a <- compile(a)
-                                       b <- compile(b)
-                                     } yield interleave(a, b)
-      case Score.Rest(dur)        => State.pure(Vector(Wait(dur)))
-      case Score.Note(pitch, dur) => State.apply(id => (
-                                       id + 1,
-                                       Vector(
-                                         NoteOn(id, pitch),
-                                         Wait(dur),
-                                         NoteOff(id)
-                                       )
-                                     ))
+      case Score.Empty =>
+        State.pure(Vector())
+
+      case Score.Seq(a, b) =>
+        for {
+          a <- compile(a)
+          b <- compile(b)
+        } yield a ++ b
+
+      case Score.Par(a, b) =>
+        for {
+          a <- compile(a)
+          b <- compile(b)
+        } yield interleave(a, b)
+
+      case Score.Rest(dur) =>
+        State.pure(Vector(Wait(dur)))
+
+      case Score.Note(pitch, dur) =>
+        State(id => (
+          id + 1,
+          Vector(
+            NoteOn(id, pitch),
+            Wait(dur),
+            NoteOff(id)
+          )
+        ))
     }
-
-  // private[player] def maxChannel(commands: Seq[Command]): Int =
-  //   commands.collect {
-  //     case NoteOn(channel, _) => channel
-  //     case NoteOff(channel)   => channel
-  //   } match {
-  //     case Seq() => 0
-  //     case seq   => seq.max
-  //   }
-
-  // private[player] def renumberChannels(commands: Seq[Command], base: Int): Seq[Command] = {
-  //   val original = commands.collect {
-  //     case NoteOn(channel, _) => channel
-  //     case NoteOff(channel)   => channel
-  //   }.distinct.sorted
-
-  //   val renumber = original.zipWithIndex.map {
-  //     case (a, b) => (a, b + base)
-  //   }.toMap
-
-  //   commands map {
-  //     case NoteOn(channel, freq) => NoteOn(renumber(channel), freq)
-  //     case NoteOff(channel)      => NoteOff(renumber(channel))
-  //     case Wait(duration)        => Wait(duration)
-  //   }
-  // }
 
   private[player] def interleave(commands1: Seq[Command], commands2: Seq[Command]): Seq[Command] = {
     @tailrec def loop(a: Seq[Command], b: Seq[Command], accum: Seq[Command]): Seq[Command] = {

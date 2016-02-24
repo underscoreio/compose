@@ -1,5 +1,4 @@
 organization in ThisBuild := "com.davegurnell"
-version      in ThisBuild := "0.1.0"
 scalaVersion in ThisBuild := "2.11.7"
 
 lazy val core = crossProject.

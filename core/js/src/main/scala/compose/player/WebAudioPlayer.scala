@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext => EC, _}
 import scala.scalajs.js
 
 object WebAudioPlayer {
-  case class State(context: AudioContext, buffer: AudioBuffer)
+  case class State(context: AudioContext, buffer: AudioBuffer, playing: Set[Command.NoteOn])
 }
 
 class WebAudioPlayer(
@@ -29,7 +29,7 @@ class WebAudioPlayer(
     request.onload = (evt: Event) =>
       context.decodeAudioData(
         request.response.asInstanceOf[ArrayBuffer],
-        (buffer: AudioBuffer) => promise.success(State(context, buffer))
+        (buffer: AudioBuffer) => promise.success(State(context, buffer, Set.empty))
       )
 
     request.send()
@@ -37,8 +37,7 @@ class WebAudioPlayer(
   }
 
   def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
-    callback.foreach(_(state, cmd))
-    cmd match {
+    (cmd match {
       case cmd: NoteOn =>
         Future {
           var source = state.context.createBufferSource()
@@ -46,11 +45,11 @@ class WebAudioPlayer(
           source.connect(state.context.destination)
           source.playbackRate.setValueAtTime(cmd.pitch.frequency / 220.0, 0)
           source.start(0)
-          state
+          state.copy(playing = state.playing + cmd)
         }
 
       case cmd: NoteOff =>
-        Future.successful(state)
+        Future.successful(state.copy(playing = state.playing filterNot (_.id == cmd.id)))
 
       case cmd: Wait =>
         val promise = Promise[State]
@@ -58,6 +57,9 @@ class WebAudioPlayer(
           promise.success(state)
         }
         promise.future
+    }) map { state =>
+      callback.foreach(_(state, cmd))
+      state
     }
   }
 }

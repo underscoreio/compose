@@ -5,6 +5,8 @@ created with [SuperCollider] and [ScalaCollider].
 
 Copyright 2015 Dave Gurnell. Licensed [GPLv3].
 
+Read more about this library on the [Underscore blog][blog].
+
 [![Build Status](https://travis-ci.org/underscoreio/compose.svg?branch=develop)](https://travis-ci.org/underscoreio/compose)
 
 ## Setup
@@ -27,3 +29,4 @@ Copyright 2015 Dave Gurnell. Licensed [GPLv3].
 [SuperCollider]: http://www.audiosynth.com
 [ScalaCollider]: https://github.com/Sciss/ScalaCollider
 [GPLv3]: https://www.gnu.org/licenses/gpl.html
+[blog]: http://underscore.io/blog/posts/2015/03/05/compositional-music-composition.html

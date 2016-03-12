@@ -1,5 +1,7 @@
 # Compose
 
+[![Join the chat at https://gitter.im/underscoreio/compose](https://badges.gitter.im/underscoreio/compose.svg)](https://gitter.im/underscoreio/compose?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A compositional music composition library
 created with [SuperCollider] and [ScalaCollider].
 

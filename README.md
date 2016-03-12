@@ -1,32 +1,114 @@
 # Compose
 
-A compositional music composition library
-created with [SuperCollider] and [ScalaCollider].
+A compositional music composition library.
 
-Copyright 2015 Dave Gurnell. Licensed [GPLv3].
+Copyright 2015-2016 [Dave Gurnell][davegurnell]. Licensed [Apache 2][license].
 
-Read more about this library on the [Underscore blog][blog].
+[![Build Status](https://travis-ci.org/underscoreio/compose.svg?branch=develop)][travis]
+[![Join the chat at https://gitter.im/underscoreio/compose](https://badges.gitter.im/underscoreio/compose.svg)][gitter]
 
-[![Build Status](https://travis-ci.org/underscoreio/compose.svg?branch=develop)](https://travis-ci.org/underscoreio/compose)
+# Overview
 
-## Setup
+*Compose* is a library for writing songs using functional programming.
+It is split into a number of subprojects:
 
-1. Install [SuperCollider]
+- `compose-core`     - data structures and DSLs for building songs;
+- `compose-examples` - example songs written using `compose-core`;
+- `compose-player`   - players for the JVM and ScalaJS;
+- `compose-demo`     - local project for quick experimentation (not published to Bintray).
 
-2. Add the `scsynth` binary to your `PATH`
+You can read more about Compose on the [Underscore blog][blog].
 
-3. Clone this repo and run the project:
+Compose is cross-built for the JVM and ScalaJS.
+The JVM player uses [ScalaCollider][scalacollider] and [Supercollider][supercollider]
+to play songs using a synthesizer (a sine wave by default).
+The ScalaJS player uses the [web audio API][webaudio] to play songs using samples.
 
-   ~~~ bash
-   $ git clone https://github.com/underscoreio/compose.git
+# Quick Start
 
-   $ cd compose
+If you're working on the JVM, you can add Compose to your SBT build as follows:
 
-   $ ./sbt.sh run
-   ~~~
+```scala
+resolvers += Resolver.bintrayRepo("underscoreio", "training")
 
-[SBT]: http://scala-sbt.org
-[SuperCollider]: http://www.audiosynth.com
-[ScalaCollider]: https://github.com/Sciss/ScalaCollider
-[GPLv3]: https://www.gnu.org/licenses/gpl.html
+libraryDependencies ++= Seq(
+  "io.underscore" %% "compose-core"     % "<<VERSION>>",
+  "io.underscore" %% "compose-player"   % "<<VERSION>>"
+)
+```
+
+If you're working in ScalaJS, use the following settings instead:
+
+```scala
+resolvers += Resolver.bintrayRepo("underscoreio", "training")
+
+libraryDependencies ++= Seq(
+  "io.underscore" %%% "compose-core"     % "<<VERSION>>",
+  "io.underscore" %%% "compose-player"   % "<<VERSION>>"
+)
+```
+
+Once you've added Compose to your build, you can write songs as follows:
+
+```scala
+import compose.core._
+
+val song =
+  Score.Note(Pitch.C3, Duration.Quarter) + Score.Note(Pitch.E3, Duration.Quarter) +
+  Score.Note(Pitch.G3, Duration.Quarter) + Score.Note(Pitch.G3, Duration.Whole) +
+```
+
+There are numerous shortcuts and conversions to make this code easier to write.
+Check out the [examples][examples] for inspiration.
+
+You can play your song on the JVM as follows:
+
+```scala
+import compose.player._
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{ Duration => Dur }
+
+// Create a player:
+ScalaColliderPlayer.withPlayer(4) { player: ScalaColliderPlayer =>
+
+  // Start the song playing:
+  val playing: Future[ScalaColliderPlayer.State] =
+    player.play(song, Tempo(180))
+
+  // Wait for the song to finish:
+  Await.result(playing, Dur.Inf)
+
+}
+```
+
+On ScalaJS, the code looks like the following:
+
+```scala
+import compose.player._
+import scala.concurrent.Await
+import scala.concurrent.duration.{ Duration => Dur }
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+
+// Create a player:
+val player: WebAudioPlayer = new WebAudioPlayer()
+
+// Start the song playing:
+val playing: Future[WebAudioPlayer.State] =
+  player.play(song, Tempo(180))
+
+// Wait for the song to finish:
+Await.result(playing, Dur.Inf)
+```
+
+That's all. If you have any questions, please ask on [Gitter][gitter]. Happy composing!
+
 [blog]: http://underscore.io/blog/posts/2015/03/05/compositional-music-composition.html
+[davegurnell]: http://davegurnell.com
+[examples]: https://github.com/underscoreio/compose/blob/develop/main/shared/src/main/scala/compose/examples
+[gitter]: https://gitter.im/underscoreio/compose?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[license]: http://www.apache.org/licenses/LICENSE-2.0.txt
+[scalacollider]: https://github.com/Sciss/ScalaCollider
+[supercollider]: http://www.audiosynth.com
+[travis]: https://travis-ci.org/underscoreio/compose
+[webaudio]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API

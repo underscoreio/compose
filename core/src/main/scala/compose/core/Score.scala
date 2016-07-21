@@ -1,11 +1,11 @@
 package compose.core
 
 sealed trait Score {
-  def +(that: Score) = Score.Seq(this, that)
+  def ~(that: Score) = Score.Seq(this, that)
   def |(that: Score) = Score.Par(this, that)
 
   def repeat(num: Int): Score =
-    (1 until num).foldLeft(this)((a, b) => a + this)
+    (1 until num).foldLeft(this)((a, b) => a ~ this)
 
   def fold(pf: Pitch => Pitch = identity, df: Duration => Duration = identity): Score = this match {
     case Score.Empty      => Score.Empty

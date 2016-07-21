@@ -56,7 +56,7 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
           parseString(d,     10) |
           parseString(a,      5) |
           parseString(lowE,   0)
-        ) + parse(rest)
+        ) ~ parse(rest)
 
       case Nil =>
         Score.Empty
@@ -93,8 +93,8 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
     def completePitch: StringAccum =
       if(length > 0) {
         pitch match {
-          case Some(p) => copy(pitch = None, length = 0, score = score + Score.Note(p, baseDuration * length))
-          case _       => copy(pitch = None, length = 0, score = score + Score.Rest(baseDuration * length))
+          case Some(p) => copy(pitch = None, length = 0, score = score ~ Score.Note(p, baseDuration * length))
+          case _       => copy(pitch = None, length = 0, score = score ~ Score.Rest(baseDuration * length))
         }
       } else copy(pitch = None, length = 0)
   }

@@ -54,8 +54,10 @@ Once you've added Compose to your build, you can write songs as follows:
 import compose.core._
 
 val song =
-  Score.Note(Pitch.C3, Duration.Quarter) + Score.Note(Pitch.E3, Duration.Quarter) +
-  Score.Note(Pitch.G3, Duration.Quarter) + Score.Note(Pitch.G3, Duration.Whole) +
+  Score.Note(Pitch.C3, Duration.Quarter) ~
+  Score.Note(Pitch.E3, Duration.Quarter) ~
+  Score.Note(Pitch.G3, Duration.Quarter) ~
+  Score.Note(Pitch.G3, Duration.Whole)
 ```
 
 There are numerous shortcuts and conversions to make this code easier to write.

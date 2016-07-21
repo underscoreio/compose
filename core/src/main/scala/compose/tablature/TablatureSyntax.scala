@@ -21,7 +21,7 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
 
           val lines: List[String] = tablature.split("\n").flatMap(trimComments).toList
           val score: c.Tree       = render(parse(lines))
-          q"$score.normalize"
+          q"$score.simplify"
 
         case _ => fail("Invalid tablature")
       }

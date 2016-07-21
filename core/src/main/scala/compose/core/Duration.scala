@@ -4,6 +4,8 @@ import algebra.Order
 import algebra.std.int._
 
 case class Duration(value: Int) {
+  def halfTime          = Duration(value *  2)
+  def doubleTime        = Duration(value /  2)
   def dotted            = Duration(value *  3 / 2)
   def doubleDotted      = Duration(value *  7 / 4)
   def tripleDotted      = Duration(value * 15 / 8)

@@ -3,75 +3,31 @@ package compose.core
 sealed trait Score {
   def +(that: Score) = Score.Seq(this, that)
   def |(that: Score) = Score.Par(this, that)
-  def repeat(num: Int) =
-    (1 until num).foldLeft[Score](this)((a, b) => a + this)
 
-  def halfTime: Score = this match {
+  def repeat(num: Int): Score =
+    (1 until num).foldLeft(this)((a, b) => a + this)
+
+  def fold(pf: Pitch => Pitch = identity, df: Duration => Duration = identity): Score = this match {
     case Score.Empty      => Score.Empty
-    case Score.Note(n, d) => Score.Note(n, d * 2)
-    case Score.Rest(d)    => Score.Rest(d * 2)
-    case Score.Seq(a, b)  => Score.Seq(a.halfTime, b.halfTime)
-    case Score.Par(a, b)  => Score.Par(a.halfTime, b.halfTime)
+    case Score.Note(n, d) => Score.Note(pf(n), df(d))
+    case Score.Rest(d)    => Score.Rest(df(d))
+    case Score.Seq(a, b)  => Score.Seq(a.fold(pf, df), b.fold(pf, df))
+    case Score.Par(a, b)  => Score.Par(a.fold(pf, df), b.fold(pf, df))
   }
 
-  def doubleTime: Score = this match {
-    case Score.Empty      => Score.Empty
-    case Score.Note(n, d) => Score.Note(n, d / 2)
-    case Score.Rest(d)    => Score.Rest(d / 2)
-    case Score.Seq(a, b)  => Score.Seq(a.doubleTime, b.doubleTime)
-    case Score.Par(a, b)  => Score.Par(a.doubleTime, b.doubleTime)
-  }
+  def transpose(t: Int): Score = this.fold(pf = _ transpose t)
+  def halfTime: Score          = this.fold(df = _.halfTime)
+  def doubleTime: Score        = this.fold(df = _.doubleTime)
+  def dotted: Score            = this.fold(df = _.dotted)
+  def doubleDotted: Score      = this.fold(df = _.doubleDotted)
+  def tripleDotted: Score      = this.fold(df = _.tripleDotted)
 
-  def transpose(t: Int): Score = this match {
-    case Score.Empty      => Score.Empty
-    case Score.Note(n, d) => Score.Note(n transpose t, d)
-    case Score.Rest(d)    => Score.Rest(d)
-    case Score.Seq(a, b)  => Score.Seq(a transpose t, b transpose t)
-    case Score.Par(a, b)  => Score.Par(a transpose t, b transpose t)
-  }
-
-  def dotted: Score = this match {
-    case Score.Empty      => Score.Empty
-    case Score.Note(n, d) => Score.Note(n, d.dotted)
-    case Score.Rest(d)    => Score.Rest(d.dotted)
-    case Score.Seq(a, b)  => Score.Seq(a.dotted, b.dotted)
-    case Score.Par(a, b)  => Score.Par(a.dotted, b.dotted)
-  }
-
-  def doubleDotted: Score = this match {
-    case Score.Empty      => Score.Empty
-    case Score.Note(n, d) => Score.Note(n, d.doubleDotted)
-    case Score.Rest(d)    => Score.Rest(d.doubleDotted)
-    case Score.Seq(a, b)  => Score.Seq(a.doubleDotted, b.doubleDotted)
-    case Score.Par(a, b)  => Score.Par(a.doubleDotted, b.doubleDotted)
-  }
-
-  def tripleDotted: Score = this match {
-    case Score.Empty      => Score.Empty
-    case Score.Note(n, d) => Score.Note(n, d.tripleDotted)
-    case Score.Rest(d)    => Score.Rest(d.tripleDotted)
-    case Score.Seq(a, b)  => Score.Seq(a.tripleDotted, b.tripleDotted)
-    case Score.Par(a, b)  => Score.Par(a.tripleDotted, b.tripleDotted)
-  }
-
-  def normalize: Score = this match {
+  def simplify: Score = this match {
     case Score.Empty      => this
     case Score.Note(n, d) => this
     case Score.Rest(d)    => this
-    case Score.Seq(a, b)  =>
-      (a.normalize, b.normalize) match {
-        case (Score.Empty , Score.Empty) => Score.Empty
-        case (Score.Empty , b         ) => b
-        case (a          , Score.Empty) => a
-        case (a          , b         ) => Score.Seq(a, b)
-      }
-    case Score.Par(a, b)  =>
-      (a.normalize, b.normalize) match {
-        case (Score.Empty , Score.Empty) => Score.Empty
-        case (Score.Empty , b         ) => b
-        case (a          , Score.Empty) => a
-        case (a          , b         ) => Score.Par(a, b)
-      }
+    case Score.Seq(a, b)  => Score.simplify(a, b)(Score.Seq.apply)
+    case Score.Par(a, b)  => Score.simplify(a, b)(Score.Par.apply)
   }
 }
 
@@ -90,4 +46,12 @@ object Score {
     def s = Rest(Duration.Sixteenth)
     def t = Rest(Duration.ThirtySecond)
   }
+
+  def simplify(a: Score, b: Score)(func: (Score, Score) => Score): Score =
+    (a.simplify, b.simplify) match {
+      case (Score.Empty , Score.Empty) => Score.Empty
+      case (Score.Empty , b          ) => b
+      case (a           , Score.Empty) => a
+      case (a           , b          ) => func(a, b)
+    }
 }

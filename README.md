@@ -7,7 +7,7 @@ Copyright 2015-2016 [Dave Gurnell][davegurnell]. Licensed [Apache 2][license].
 [![Build Status](https://travis-ci.org/underscoreio/compose.svg?branch=develop)][travis]
 [![Coverage status](https://img.shields.io/codecov/c/github/underscoreio/compose/develop.svg)](https://codecov.io/github/underscoreio/compose)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.underscore/compose_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.underscore/compose_2.11)
-[![Join the chat at https://gitter.im/underscoreio/compose](https://badges.gitter.im/underscoreio/compose.svg)][gitter]
+[![Join the chat at https://gitter.im/underscoreio/scala](https://badges.gitter.im/underscoreio/scala.svg)][gitter]
 
 # Overview
 

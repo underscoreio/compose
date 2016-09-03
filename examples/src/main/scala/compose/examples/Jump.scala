@@ -8,40 +8,38 @@ import scalajs.js.annotation.JSExport
 
 trait Jump {
 
-  val beat = C4.s ~ r.s
-
   val countIn =
-    beat ~
-    beat ~
-    beat ~
-    beat
+    C4.e repeat 4
+
+  val bassline =
+    C4.e repeat 32
 
   val riff =
-    beat ~
-    beat ~
+    r.e ~
+    r.e ~
     (G4.e | D5.e) ~
-    beat ~
-    beat ~
+    r.e ~
+    r.e ~
     (G4.e | C5.e | E5.e) ~
-    beat ~
-    beat ~
+    r.e ~
+    r.e ~
     (F4.e | A4.e | C5.e) ~
-    beat ~
-    beat ~
+    r.e ~
+    r.e ~
     (F4.e | A4.e | C5.e) ~
-    beat ~
+    r.e ~
     (G4.e | D5.e) ~
-    beat ~
+    r.e ~
     (G4.q.dotted | D5.q.dotted) ~
     (G4.e | C5.e | E5.e) ~
-    beat ~
-    beat ~
+    r.e ~
+    r.e ~
     (F4.e | A4.e | C5.e) ~
-    beat ~
+    r.e ~
     (C4.q | F4.q | A4.q) ~
     (C4.q | E4.q | G4.q) ~
     (C4.e * 5 | D4.e * 5 | G4.e * 5)
 
   @JSExport
-  val jump = countIn ~ riff ~ riff
+  val jump = countIn ~ (riff | bassline) ~ (riff | bassline)
 }

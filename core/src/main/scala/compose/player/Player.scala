@@ -11,13 +11,13 @@ trait Player[State] {
   def play(score: Score, tempo: Tempo)(implicit ec: EC): Future[State] = {
     val commands = Compile(score)
     for {
-      state <- initialise
+      state <- initialise(score)
       state <- playCommands(state, commands)(ec, tempo)
       state <- shutdown(state)
     } yield state
   }
 
-  def initialise: Future[State]
+  def initialise(score: Score): Future[State]
 
   def shutdown(state: State): Future[State] =
     Future.successful(state)

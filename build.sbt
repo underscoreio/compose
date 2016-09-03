@@ -1,5 +1,5 @@
 organization  in ThisBuild := "io.underscore"
-version       in ThisBuild := "0.4.0"
+version       in ThisBuild := "0.5.0"
 scalaVersion  in ThisBuild := "2.11.8"
 
 licenses      in ThisBuild += ("Apache-2.0", url("http://apache.org/licenses/LICENSE-2.0"))

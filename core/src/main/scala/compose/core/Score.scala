@@ -55,6 +55,8 @@ trait ScoreMethods {
   @JSExport def dotted: Score            = this.fold(df = _.dotted)
   @JSExport def doubleDotted: Score      = this.fold(df = _.doubleDotted)
   @JSExport def tripleDotted: Score      = this.fold(df = _.tripleDotted)
+  @JSExport def *(n: Int): Score         = this.fold(df = _ * n)
+  @JSExport def /(n: Int): Score         = this.fold(df = _ / n)
 
   def simplify: Score = this match {
     case EmptyScore      => this

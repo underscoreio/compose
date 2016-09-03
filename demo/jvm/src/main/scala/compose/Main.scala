@@ -19,7 +19,8 @@ object Main extends App {
     MenuItem("4", "Scale With Echo",    withDelay(scale(Pitch.C3.s) repeat 4, Duration.Eighth.dotted)),
     MenuItem("5", "Smoke On The Water", smokeOnTheWater),
     MenuItem("6", "Twelve Bar Blues",   twelveBarBlues),
-    MenuItem("7", "Freebird!",          freebird)
+    MenuItem("7", "Jump",               jump),
+    MenuItem("8", "Freebird!",          freebird)
   )
 
   ScalaColliderPlayer.withPlayer(4) { player =>

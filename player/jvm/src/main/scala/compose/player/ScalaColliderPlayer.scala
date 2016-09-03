@@ -28,7 +28,11 @@ object ScalaColliderPlayer {
       }
     }
 
-  case class State(available: Seq[Synth], playing: Map[Int, Synth])
+  case class State(
+    score     : Score,
+    available : Seq[Synth],
+    playing   : Map[Int, Synth]
+  )
 }
 
 class ScalaColliderPlayer(numChannels: Int, synthDef: SynthDef, server: Server) extends Player[ScalaColliderPlayer.State] {
@@ -41,11 +45,11 @@ class ScalaColliderPlayer(numChannels: Int, synthDef: SynthDef, server: Server) 
   def free: Unit =
     channels.foreach(_.free)
 
-  def initialise: Future[State] =
-    Future.successful(State(channels, Map.empty))
+  def initialise(score: Score): Future[State] =
+    Future.successful(State(score, channels, Map.empty))
 
   override def shutdown(state: State): Future[State] =
-    Future.successful(State(Nil, Map.empty))
+    Future.successful(state.copy(available = Nil, playing = Map.empty))
 
   def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
     cmd match {
@@ -55,14 +59,14 @@ class ScalaColliderPlayer(numChannels: Int, synthDef: SynthDef, server: Server) 
 
           case channel +: remaining =>
             channel.set(Amp -> 1.0, Freq -> pitch.frequency)
-            Future.successful(State(remaining, state.playing + (id -> channel)))
+            Future.successful(state.copy(available = remaining, playing = state.playing + (id -> channel)))
         }
 
       case NoteOff(id) =>
         state.playing.get(id) match {
           case Some(channel) =>
             channel.set(Amp -> 0.001)
-            Future.successful(State(state.available :+ channel, state.playing - id))
+            Future.successful(state.copy(available = state.available :+ channel, playing = state.playing - id))
 
           case None =>
             Future.successful(state)

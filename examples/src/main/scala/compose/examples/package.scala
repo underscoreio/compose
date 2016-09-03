@@ -8,6 +8,7 @@ object all
   with ChordProgression
   with DuellingBanjos
   with Freebird
+  with Jump
   with Scale
   with SmokeOnTheWater
   with TwelveBarBlues

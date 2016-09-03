@@ -44,7 +44,6 @@ class WebAudioPlayer(
   }
 
   def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
-    println("Playing command " + cmd)
     (cmd match {
       case cmd: NoteOn =>
         Future {

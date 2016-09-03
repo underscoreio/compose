@@ -19,25 +19,25 @@ object Compile {
 
   private[player] def compile(score: Score): CompilerState[Seq[Command]] =
     score match {
-      case Score.Empty =>
+      case EmptyScore =>
         State.pure(Vector())
 
-      case Score.Seq(a, b) =>
+      case SeqScore(a, b) =>
         for {
           a <- compile(a)
           b <- compile(b)
         } yield a ++ b
 
-      case Score.Par(a, b) =>
+      case ParScore(a, b) =>
         for {
           a <- compile(a)
           b <- compile(b)
         } yield interleave(a, b)
 
-      case Score.Rest(dur) =>
+      case Rest(dur) =>
         State.pure(Vector(Wait(dur)))
 
-      case Score.Note(pitch, dur) =>
+      case Note(pitch, dur) =>
         State(id => (
           id + 1,
           Vector(

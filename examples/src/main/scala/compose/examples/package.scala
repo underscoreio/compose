@@ -1,9 +1,13 @@
-package compose
+package compose.examples
 
-package object examples
-  extends examples.ChordProgression
-  with examples.DuellingBanjos
-  with examples.Freebird
-  with examples.Scale
-  with examples.SmokeOnTheWater
-  with examples.TwelveBarBlues
+import scalajs.js.annotation.JSExport
+
+@JSExport
+object all
+  extends Bumblebee
+  with ChordProgression
+  with DuellingBanjos
+  with Freebird
+  with Scale
+  with SmokeOnTheWater
+  with TwelveBarBlues

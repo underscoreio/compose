@@ -3,17 +3,24 @@ package compose.player
 import compose.core._
 import org.scalajs.dom.{XMLHttpRequest, Event}
 import org.scalajs.dom.ext.Ajax
-import org.scalajs.dom.raw.{AudioContext, AudioBuffer}
-import scala.scalajs.js.typedarray.ArrayBuffer
+import org.scalajs.dom.raw.{AudioContext, AudioBuffer, AudioBufferSourceNode}
+import scalajs.js.typedarray.ArrayBuffer
 import scala.concurrent.{ExecutionContext => EC, _}
-import scala.scalajs.js
+import scalajs.js
+import scalajs.js.annotation.JSExport
 
 object WebAudioPlayer {
-  case class State(context: AudioContext, buffer: AudioBuffer, playing: Set[Command.NoteOn])
+  case class State(
+    context: AudioContext,
+    buffer: AudioBuffer,
+    playing: Set[Command.NoteOn] = Set.empty,
+    sources: Map[Int, AudioBufferSourceNode] = Map.empty
+  )
 }
 
+@JSExport
 class WebAudioPlayer(
-  sampleUrl: String = "web-audio-spike/cat9.wav",
+  sampleUrl: String,
   context: AudioContext = new AudioContext(),
   callback: Option[(WebAudioPlayer.State, Command) => Unit] = None
 ) extends Player[WebAudioPlayer.State] {
@@ -29,7 +36,7 @@ class WebAudioPlayer(
     request.onload = (evt: Event) =>
       context.decodeAudioData(
         request.response.asInstanceOf[ArrayBuffer],
-        (buffer: AudioBuffer) => promise.success(State(context, buffer, Set.empty))
+        (buffer: AudioBuffer) => promise.success(State(context, buffer))
       )
 
     request.send()
@@ -37,6 +44,7 @@ class WebAudioPlayer(
   }
 
   def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
+    println("Playing command " + cmd)
     (cmd match {
       case cmd: NoteOn =>
         Future {
@@ -45,11 +53,18 @@ class WebAudioPlayer(
           source.connect(state.context.destination)
           source.playbackRate.setValueAtTime(cmd.pitch.frequency / 220.0, 0)
           source.start(0)
-          state.copy(playing = state.playing + cmd)
+          state.copy(
+            playing = state.playing + cmd,
+            sources = state.sources + (cmd.id -> source)
+          )
         }
 
       case cmd: NoteOff =>
-        Future.successful(state.copy(playing = state.playing filterNot (_.id == cmd.id)))
+        state.sources.get(cmd.id).foreach(_.stop(0))
+        Future.successful(state.copy(
+          playing = state.playing filterNot (_.id == cmd.id),
+          sources = state.sources - cmd.id
+        ))
 
       case cmd: Wait =>
         val promise = Promise[State]

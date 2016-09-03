@@ -1,24 +1,44 @@
-organization in ThisBuild := "io.underscore"
-scalaVersion in ThisBuild := "2.11.7"
+organization  in ThisBuild := "io.underscore"
+version       in ThisBuild := "0.4.0"
+scalaVersion  in ThisBuild := "2.11.8"
 
-lazy val bintraySettings = Seq(
-  bintrayOrganization := Some("underscoreio"),
-  bintrayRepository   := "training",
-  licenses            += ("Apache-2.0", url("http://apache.org/licenses/LICENSE-2.0"))
+licenses      in ThisBuild += ("Apache-2.0", url("http://apache.org/licenses/LICENSE-2.0"))
+
+scalacOptions in ThisBuild ++= Seq(
+  "-feature",
+  "-unchecked",
+  "-deprecation"
 )
 
+pomExtra in Global := {
+  <url>https://github.com/underscoreio/compose</url>
+  <scm>
+    <connection>scm:git:github.com/underscoreio/compose</connection>
+    <developerConnection>scm:git:git@github.com:underscoreio/compose</developerConnection>
+    <url>github.com/underscoreio/compose</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>davegurnell</id>
+      <name>Dave Gurnell</name>
+      <url>http://twitter.com/davegurnell</url>
+    </developer>
+  </developers>
+}
+
 lazy val noPublishSettings = Seq(
-  publish := {}
+  publish         := {},
+  publishArtifact := false
 )
 
 lazy val core = crossProject
   .crossType(CrossType.Pure)
   .settings(name := "compose-core")
-  .settings(bintraySettings : _*)
   .settings(libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats"          % "0.4.1",
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "org.scalatest" %% "scalatest"     % "2.2.6" % Test
+    "org.scala-js"    %% "scalajs-stubs" % scalaJSVersion % Provided,
+    "org.scala-lang"   % "scala-reflect" % scalaVersion.value,
+    "org.typelevel"  %%% "cats"          % "0.7.0",
+    "org.scalatest"   %% "scalatest"     % "2.2.6" % Test
   ))
 
 lazy val coreJVM = core.jvm
@@ -28,7 +48,9 @@ lazy val examples = crossProject
   .crossType(CrossType.Pure)
   .dependsOn(core)
   .settings(name := "compose-examples")
-  .settings(bintraySettings : _*)
+  .settings(libraryDependencies ++= Seq(
+    "org.scala-js"    %% "scalajs-stubs" % scalaJSVersion % Provided
+  ))
 
 lazy val examplesJVM = examples.jvm
 lazy val examplesJS  = examples.js
@@ -37,16 +59,15 @@ lazy val player = crossProject
   .crossType(CrossType.Dummy)
   .dependsOn(core)
   .settings(name := "compose-player")
-  .settings(bintraySettings : _*)
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats" % "0.4.1"
+      "org.typelevel" %%% "cats" % "0.7.0"
     )
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "de.sciss"      %% "scalacollider" % "1.16.0",
-      "org.scalatest" %% "scalatest"     % "2.2.6" % Test
+      "de.sciss"       %% "scalacollider" % "1.16.0",
+      "org.scalatest"  %% "scalatest"     % "2.2.6" % Test
     )
   )
   .jsSettings(

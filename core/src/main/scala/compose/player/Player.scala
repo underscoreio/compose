@@ -2,15 +2,12 @@ package compose.player
 
 import compose.core._
 import scala.concurrent.{ExecutionContext => EC, _}
+import scalajs.js.annotation.JSExport
 
 trait Player[State] {
   import Command._
 
-  def initialise: Future[State]
-
-  def shutdown(state: State): Future[State] =
-    Future.successful(state)
-
+  @JSExport
   def play(score: Score, tempo: Tempo)(implicit ec: EC): Future[State] = {
     val commands = Compile(score)
     for {
@@ -19,6 +16,11 @@ trait Player[State] {
       state <- shutdown(state)
     } yield state
   }
+
+  def initialise: Future[State]
+
+  def shutdown(state: State): Future[State] =
+    Future.successful(state)
 
   def playCommands(state: State, commands: Seq[Command])(implicit ec: EC, tempo: Tempo): Future[State] =
     commands match {

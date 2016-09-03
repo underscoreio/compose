@@ -1,7 +1,7 @@
 package compose
 
 import compose.core._
-import compose.examples._
+import compose.examples.all._
 import compose.player._
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration => Dur}

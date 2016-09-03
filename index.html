@@ -3,10 +3,19 @@
 <html>
   <head>
     <title>Compose</title>
-    <script src="main/js/target/scala-2.11/compose-fastopt.js"></script>
-    <script src="main/js/target/scala-2.11/compose-launcher.js"></script>
+
+    <meta charset="utf-8">
   </head>
   <body>
     <h1>Compose</h1>
+    <script src="demo/js/target/scala-2.11/compose-demo-fastopt.js"></script>
+    <script>
+      window.examples = compose.examples.all();
+
+      // compose.Main().play(
+      //   examples.smokeOnTheWater.transpose(-12),
+      //   "samples/meow.wav"
+      // );
+    </script>
   </body>
 </html>

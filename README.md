@@ -5,7 +5,9 @@ A compositional music composition library.
 Copyright 2015-2016 [Dave Gurnell][davegurnell]. Licensed [Apache 2][license].
 
 [![Build Status](https://travis-ci.org/underscoreio/compose.svg?branch=develop)][travis]
-[![Join the chat at https://gitter.im/underscoreio/compose](https://badges.gitter.im/underscoreio/compose.svg)][gitter]
+[![Coverage status](https://img.shields.io/codecov/c/github/underscoreio/compose/develop.svg)](https://codecov.io/github/underscoreio/compose)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.underscore/compose_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.underscore/compose_2.11)
+[![Join the chat at https://gitter.im/underscoreio/scala](https://badges.gitter.im/underscoreio/scala.svg)][gitter]
 
 # Overview
 
@@ -29,22 +31,20 @@ The ScalaJS player uses the [web audio API][webaudio] to play songs using sample
 If you're working on the JVM, you can add Compose to your SBT build as follows:
 
 ```scala
-resolvers += Resolver.bintrayRepo("underscoreio", "training")
-
 libraryDependencies ++= Seq(
   "io.underscore" %% "compose-core"     % "<<VERSION>>",
-  "io.underscore" %% "compose-player"   % "<<VERSION>>"
+  "io.underscore" %% "compose-player"   % "<<VERSION>>",
+  "io.underscore" %% "compose-examples" % "<<VERSION>>"
 )
 ```
 
 If you're working in ScalaJS, use the following settings instead:
 
 ```scala
-resolvers += Resolver.bintrayRepo("underscoreio", "training")
-
 libraryDependencies ++= Seq(
   "io.underscore" %%% "compose-core"     % "<<VERSION>>",
-  "io.underscore" %%% "compose-player"   % "<<VERSION>>"
+  "io.underscore" %%% "compose-player"   % "<<VERSION>>",
+  "io.underscore" %%% "compose-examples" % "<<VERSION>>"
 )
 ```
 
@@ -54,8 +54,10 @@ Once you've added Compose to your build, you can write songs as follows:
 import compose.core._
 
 val song =
-  Score.Note(Pitch.C3, Duration.Quarter) + Score.Note(Pitch.E3, Duration.Quarter) +
-  Score.Note(Pitch.G3, Duration.Quarter) + Score.Note(Pitch.G3, Duration.Whole) +
+  Note(Pitch.C3, Duration.Quarter) ~
+  Note(Pitch.E3, Duration.Quarter) ~
+  Note(Pitch.G3, Duration.Quarter) ~
+  Note(Pitch.G3, Duration.Whole)
 ```
 
 There are numerous shortcuts and conversions to make this code easier to write.
@@ -88,7 +90,7 @@ On ScalaJS, the code looks like the following:
 import compose.player._
 import scala.concurrent.Await
 import scala.concurrent.duration.{ Duration => Dur }
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 // Create a player:
 val player: WebAudioPlayer = new WebAudioPlayer()

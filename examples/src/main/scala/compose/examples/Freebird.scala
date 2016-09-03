@@ -1,14 +1,13 @@
 package compose.examples
 
 import compose.core._
-
 import scalajs.js.annotation.JSExport
+
 trait Freebird {
   import compose.tablature._
 
   // Pilfered from https://tabs.ultimate-guitar.com/l/lynyrd_skynyrd/free_bird_solo_tab.htm
-  @JSExport
-  val freebird =
+  @JSExport val freebird =
     tab"""
     ------------------|------------------|--------------------------------|
     ------------------|------------------|--3------------3---3---3-3------|

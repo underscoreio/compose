@@ -1,7 +1,7 @@
 package compose.tablature
 
 import compose.core._
-import compose.core.Score.{Rest => r}
+import compose.core.{Rest => r}
 import org.scalatest._
 
 class TablatureSyntaxSpec extends FreeSpec with Matchers {

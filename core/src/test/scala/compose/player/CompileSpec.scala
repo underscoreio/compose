@@ -7,14 +7,14 @@ class CompileSpec extends FreeSpec with Matchers {
   import Command._
 
   "compiler should number sequential notes" in {
-    val score = Score.Seq(
-      Score.Seq(
-        Score.Note(Pitch.C4, Duration.Half),
-        Score.Note(Pitch.E4, Duration.Half)
+    val score = SeqScore(
+      SeqScore(
+        Note(Pitch.C4, Duration.Half),
+        Note(Pitch.E4, Duration.Half)
       ),
-      Score.Seq(
-        Score.Note(Pitch.G4, Duration.Half),
-        Score.Note(Pitch.C5, Duration.Half)
+      SeqScore(
+        Note(Pitch.G4, Duration.Half),
+        Note(Pitch.C5, Duration.Half)
       )
     )
 
@@ -35,14 +35,14 @@ class CompileSpec extends FreeSpec with Matchers {
   }
 
   "compiler should number parallel notes" in {
-    val score = Score.Par(
-      Score.Par(
-        Score.Note(Pitch.C4, Duration.Half),
-        Score.Note(Pitch.E4, Duration.Half)
+    val score = ParScore(
+      ParScore(
+        Note(Pitch.C4, Duration.Half),
+        Note(Pitch.E4, Duration.Half)
       ),
-      Score.Par(
-        Score.Note(Pitch.G4, Duration.Half),
-        Score.Note(Pitch.C5, Duration.Half)
+      ParScore(
+        Note(Pitch.G4, Duration.Half),
+        Note(Pitch.C5, Duration.Half)
       )
     )
 
@@ -60,17 +60,17 @@ class CompileSpec extends FreeSpec with Matchers {
   }
 
   "compiler should interleave overlapping notes" in {
-    val score = Score.Par(
-      Score.Seq(
-        Score.Rest(Duration.Eighth),
-        Score.Seq(
-          Score.Note(Pitch.C4, Duration.Half),
-          Score.Note(Pitch.E4, Duration.Half)
+    val score = ParScore(
+      SeqScore(
+        Rest(Duration.Eighth),
+        SeqScore(
+          Note(Pitch.C4, Duration.Half),
+          Note(Pitch.E4, Duration.Half)
         )
       ),
-      Score.Seq(
-        Score.Note(Pitch.G4, Duration.Half),
-        Score.Note(Pitch.C5, Duration.Half)
+      SeqScore(
+        Note(Pitch.G4, Duration.Half),
+        Note(Pitch.C5, Duration.Half)
       )
     )
 

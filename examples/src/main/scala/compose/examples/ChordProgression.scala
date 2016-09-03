@@ -1,11 +1,13 @@
 package compose.examples
 
 import compose.core._
+import scalajs.js.annotation.JSExport
 
 trait ChordProgression{
   import Score._
   import Pitch._
 
+  @JSExport
   val chordProgression =
     ( C3.q  | E3.q  | G3.q  ) ~
     ( C3.q  | F3.q  | A3.q  ) ~

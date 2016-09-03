@@ -1,6 +1,7 @@
 package compose.examples
 
 import compose.core._
+import scalajs.js.annotation.JSExport
 
 trait Scale {
   import Score._

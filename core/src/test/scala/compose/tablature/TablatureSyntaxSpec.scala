@@ -51,17 +51,17 @@ class TablatureSyntaxSpec extends FreeSpec with Matchers {
         (r.w) |
         (r.w) |
         (r.w) |
-        (E4.s + r.s + G4.s + r.s + A4.e.dotted + E4.s + r.s + G4.s + r.s + As4.s + A4.q) |
-        (B3.s + r.s + D4.s + r.s + E4.e.dotted + B3.s + r.s + D4.s + r.s + F4.s  + E4.q) |
-        (E3.s + r.s + G3.s + r.s + A3.e.dotted + E3.s + r.s + G3.s + r.s + As3.s + A3.q)
-      ).halfTime +
+        (E4.s ~ r.s ~ G4.s ~ r.s ~ A4.e.dotted ~ E4.s ~ r.s ~ G4.s ~ r.s ~ As4.s ~ A4.q) |
+        (B3.s ~ r.s ~ D4.s ~ r.s ~ E4.e.dotted ~ B3.s ~ r.s ~ D4.s ~ r.s ~ F4.s  ~ E4.q) |
+        (E3.s ~ r.s ~ G3.s ~ r.s ~ A3.e.dotted ~ E3.s ~ r.s ~ G3.s ~ r.s ~ As3.s ~ A3.q)
+      ).halfTime ~
       (
         (r.w) |
         (r.w) |
         (r.w) |
-        (E4.s + r.s + G4.s + r.s + A4.e.dotted + G4.e + E4.q.doubleDotted) |
-        (B3.s + r.s + D4.s + r.s + E4.e.dotted + D4.e + B3.q.doubleDotted) |
-        (E3.s + r.s + G3.s + r.s + A3.e.dotted + G3.e + E3.q.doubleDotted)
+        (E4.s ~ r.s ~ G4.s ~ r.s ~ A4.e.dotted ~ G4.e ~ E4.q.doubleDotted) |
+        (B3.s ~ r.s ~ D4.s ~ r.s ~ E4.e.dotted ~ D4.e ~ B3.q.doubleDotted) |
+        (E3.s ~ r.s ~ G3.s ~ r.s ~ A3.e.dotted ~ G3.e ~ E3.q.doubleDotted)
       ).halfTime
     )
   }

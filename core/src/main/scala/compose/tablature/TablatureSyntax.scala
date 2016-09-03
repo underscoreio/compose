@@ -39,11 +39,11 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
   }
 
   def render(score: Score): c.Tree = score match {
-    case Score.Empty                      => q"Score.Empty"
-    case Score.Note(Pitch(n), Duration(d)) => q"Score.Note(Pitch($n), Duration($d))"
-    case Score.Rest(Duration(d))          => q"Score.Rest(Duration($d))"
-    case Score.Seq(a, b)                  => q"Score.Seq(${render(a)}, ${render(b)})"
-    case Score.Par(a, b)                  => q"Score.Par(${render(a)}, ${render(b)})"
+    case EmptyScore                       => q"EmptyScore"
+    case Note(Pitch(n), Duration(d)) => q"Note(Pitch($n), Duration($d))"
+    case Rest(Duration(d))           => q"Rest(Duration($d))"
+    case SeqScore(a, b)                   => q"SeqScore(${render(a)}, ${render(b)})"
+    case ParScore(a, b)                   => q"ParScore(${render(a)}, ${render(b)})"
   }
 
   def parse(lines: List[String]): Score = {
@@ -59,7 +59,7 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
         ) ~ parse(rest)
 
       case Nil =>
-        Score.Empty
+        EmptyScore
 
       case _ =>
         fail("Incorrect number of lines: " + lines)
@@ -77,7 +77,7 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
         case StartsWithChar(_    , rest) => loop(rest, accum.extendPitch)
       }
 
-    loop(str, StringAccum(None, 0, Score.Empty))
+    loop(str, StringAccum(None, 0, EmptyScore))
   }
 
   case class StringAccum(pitch: Option[Pitch], length: Int, score: Score) {
@@ -93,8 +93,8 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
     def completePitch: StringAccum =
       if(length > 0) {
         pitch match {
-          case Some(p) => copy(pitch = None, length = 0, score = score ~ Score.Note(p, baseDuration * length))
-          case _       => copy(pitch = None, length = 0, score = score ~ Score.Rest(baseDuration * length))
+          case Some(p) => copy(pitch = None, length = 0, score = score ~ Note(p, baseDuration * length))
+          case _       => copy(pitch = None, length = 0, score = score ~ Rest(baseDuration * length))
         }
       } else copy(pitch = None, length = 0)
   }

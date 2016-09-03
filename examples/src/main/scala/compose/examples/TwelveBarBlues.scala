@@ -1,12 +1,14 @@
 package compose.examples
 
 import compose.core._
+import scalajs.js.annotation.JSExport
 
 trait TwelveBarBlues {
   import Score._
   import Pitch._
 
-  def twelveBarBlues = {
+  @JSExport
+  val twelveBarBlues = {
     val bar =
       ( E3.q | B3.q  ) ~
       ( E3.s | B3.s  ) ~

@@ -1,8 +1,11 @@
 package compose.core
 
-import algebra.Order
-import algebra.std.int._
+import cats.Order
+import cats.instances.int._
 
+import scalajs.js.annotation.{JSExport, JSExportAll}
+
+@JSExportAll
 case class Duration(value: Int) {
   def halfTime          = Duration(value *  2)
   def doubleTime        = Duration(value /  2)
@@ -15,14 +18,15 @@ case class Duration(value: Int) {
   def /(n: Int)         = Duration(value / n)
 }
 
+@JSExport
 object Duration {
-  val Whole        = Duration(64)
-  val Half         = Duration(32)
-  val Quarter      = Duration(16)
-  val Eighth       = Duration(8)
-  val Sixteenth    = Duration(4)
-  val ThirtySecond = Duration(2)
-  val SixtyFourth  = Duration(1)
+  @JSExport val Whole        = Duration(64)
+  @JSExport val Half         = Duration(32)
+  @JSExport val Quarter      = Duration(16)
+  @JSExport val Eighth       = Duration(8)
+  @JSExport val Sixteenth    = Duration(4)
+  @JSExport val ThirtySecond = Duration(2)
+  @JSExport val SixtyFourth  = Duration(1)
 
   implicit val order: Order[Duration] =
     Order.by(_.value)

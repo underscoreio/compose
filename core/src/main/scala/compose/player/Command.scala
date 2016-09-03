@@ -1,6 +1,6 @@
 package compose.player
 
-import algebra.Order
+import cats.Order
 import compose.core._
 
 sealed trait Command

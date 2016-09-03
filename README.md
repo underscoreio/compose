@@ -108,7 +108,7 @@ That's all. If you have any questions, please ask on [Gitter][gitter]. Happy com
 [blog]: http://underscore.io/blog/posts/2015/03/05/compositional-music-composition.html
 [davegurnell]: http://davegurnell.com
 [examples]: https://github.com/underscoreio/compose/blob/develop/main/shared/src/main/scala/compose/examples
-[gitter]: https://gitter.im/underscoreio/compose?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[gitter]: https://gitter.im/underscoreio/scala?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [license]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [scalacollider]: https://github.com/Sciss/ScalaCollider
 [supercollider]: http://www.audiosynth.com

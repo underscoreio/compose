@@ -41,11 +41,11 @@ trait ScoreMethods {
 
   def fold(pf: Pitch => Pitch = identity, df: Duration => Duration = identity): Score =
     this match {
-      case EmptyScore      => EmptyScore
-      case Note(n, d) => Note(pf(n), df(d))
-      case Rest(d)    => Rest(df(d))
-      case SeqScore(a, b)  => SeqScore(a.fold(pf, df), b.fold(pf, df))
-      case ParScore(a, b)  => ParScore(a.fold(pf, df), b.fold(pf, df))
+      case EmptyScore     => EmptyScore
+      case Note(n, d)     => Note(pf(n), df(d))
+      case Rest(d)        => Rest(df(d))
+      case SeqScore(a, b) => SeqScore(a.fold(pf, df), b.fold(pf, df))
+      case ParScore(a, b) => ParScore(a.fold(pf, df), b.fold(pf, df))
     }
 
   @JSExport def transpose(t: Int): Score = this.fold(pf = _ transpose t)

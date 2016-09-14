@@ -44,6 +44,17 @@ lazy val core = crossProject
 lazy val coreJVM = core.jvm
 lazy val coreJS  = core.js
 
+lazy val midi = crossProject
+  .crossType(CrossType.Pure)
+  .dependsOn(core)
+  .settings(name := "compose-midi")
+  .settings(libraryDependencies ++= Seq(
+    "org.scala-js"    %% "scalajs-stubs" % scalaJSVersion % Provided
+  ))
+
+lazy val midiJVM = midi.jvm
+lazy val midiJS  = midi.js
+
 lazy val examples = crossProject
   .crossType(CrossType.Pure)
   .dependsOn(core)
@@ -66,7 +77,7 @@ lazy val player = crossProject
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "de.sciss"       %% "scalacollider" % "1.16.0",
+      "de.sciss"       %% "scalacollider" % "1.20.1",
       "org.scalatest"  %% "scalatest"     % "2.2.6" % Test
     )
   )
@@ -81,7 +92,7 @@ lazy val playerJS  = player.js
 
 lazy val demo = crossProject
   .crossType(CrossType.Dummy)
-  .dependsOn(player, examples)
+  .dependsOn(player, examples, midi)
   .settings(noPublishSettings : _*)
   .settings(name := "compose-demo")
   .jsSettings(

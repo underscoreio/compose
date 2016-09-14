@@ -65,6 +65,15 @@ Check out the [examples][examples] for inspiration.
 
 You can play your song on the JVM as follows:
 
+ 1. Install SuperCollider 3.7+
+ 2. Set the environment variable `SC_HOME` to point to `Content/Resources` inside your SuperCollider directory:
+
+    ```bash
+    export SC_HOME=/path/to/SuperCollider.app/Content/Resources
+    ```
+
+ 3. Run a Scala program as follows:
+
 ```scala
 import compose.player._
 import scala.concurrent.Await

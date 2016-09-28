@@ -8,16 +8,15 @@ import scala.annotation.tailrec
 object Compile {
   import Command._
 
-  // Internal compiler state.
-  //
-  // The integer is the next unique ID to assign
-  // to a pair of NoteOn/NoteOff commands.
-  type CompilerState[A] = State[Int, A]
+  case class CompilerState(id: Int = 0, instrument: Instrument = Instrument.default)
 
-  def apply(score: Score): Seq[Command] =
-    compile(score).runA(0).value
+  def apply(score: Score): Vector[Command] =
+    compile(score).runA(CompilerState()).value
 
-  private[player] def compile(score: Score): CompilerState[Seq[Command]] =
+  def setInstrument(instrument: Instrument): State[CompilerState, Unit] =
+    State.modify(s => s.copy(instrument = instrument))
+
+  private[player] def compile(score: Score): State[CompilerState, Vector[Command]] =
     score match {
       case EmptyScore =>
         State.pure(Vector())
@@ -34,22 +33,37 @@ object Compile {
           b <- compile(b)
         } yield interleave(a, b)
 
-      case Rest(dur) =>
-        State.pure(Vector(Wait(dur)))
+      case Rest(duration) =>
+        State.pure(Vector(Wait(duration)))
 
-      case Note(pitch, dur) =>
-        State(id => (
-          id + 1,
-          Vector(
-            NoteOn(id, pitch),
-            Wait(dur),
-            NoteOff(id)
+      case Note(pitch, duration) =>
+        State { s =>
+          (
+            s.copy(id = s.id + 1),
+            Vector(
+              createNoteOn(s.id, s.instrument, pitch),
+              Wait(duration),
+              NoteOff(s.id)
+            )
           )
-        ))
+        }
+
+      case Arrange(score, instrument) =>
+        for {
+          _ <- setInstrument(instrument)
+          a <- compile(score)
+        } yield a
     }
 
-  private[player] def interleave(commands1: Seq[Command], commands2: Seq[Command]): Seq[Command] = {
-    @tailrec def loop(a: Seq[Command], b: Seq[Command], accum: Seq[Command]): Seq[Command] = {
+  private[player] def createNoteOn(id: Int, instrument: Instrument, pitch: Pitch): NoteOn =
+    instrument match {
+      case Tuned(sample, tuning) => NoteOn(id, sample, pitch transpose tuning)
+      case Fixed(sample, fixed)  => NoteOn(id, sample, fixed)
+      case Combi(func)           => createNoteOn(id, func(pitch), pitch)
+    }
+
+  private[player] def interleave(commands1: Vector[Command], commands2: Vector[Command]): Vector[Command] = {
+    @tailrec def loop(a: Vector[Command], b: Vector[Command], accum: Vector[Command]): Vector[Command] = {
       a match {
         case (aHead: NoteOn) +: aTail =>
           loop(aTail, b, accum :+ aHead)
@@ -83,11 +97,11 @@ object Compile {
                 loop(aTail, head +: bTail, accum :+ aHead)
               }
 
-            case Seq() =>
+            case Vector() =>
               accum ++ a
           }
 
-        case Seq() =>
+        case Vector() =>
           accum ++ b
       }
     }

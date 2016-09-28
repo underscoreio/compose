@@ -39,11 +39,12 @@ class TablatureSyntax(val c: Context) extends StringHelpers {
   }
 
   def render(score: Score): c.Tree = score match {
-    case EmptyScore                       => q"EmptyScore"
+    case EmptyScore                  => q"EmptyScore"
     case Note(Pitch(n), Duration(d)) => q"Note(Pitch($n), Duration($d))"
     case Rest(Duration(d))           => q"Rest(Duration($d))"
-    case SeqScore(a, b)                   => q"SeqScore(${render(a)}, ${render(b)})"
-    case ParScore(a, b)                   => q"ParScore(${render(a)}, ${render(b)})"
+    case SeqScore(a, b)              => q"SeqScore(${render(a)}, ${render(b)})"
+    case ParScore(a, b)              => q"ParScore(${render(a)}, ${render(b)})"
+    case Arrange(a, i)               => q"${render(a)}"
   }
 
   def parse(lines: List[String]): Score = {

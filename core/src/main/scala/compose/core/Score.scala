@@ -10,6 +10,7 @@ sealed abstract class Score extends ScoreMethods with Product with Serializable
 @JSExportAll case class Rest(duration: Duration) extends Score
 @JSExportAll case class SeqScore(a: Score, b: Score) extends Score
 @JSExportAll case class ParScore(a: Score, b: Score) extends Score
+@JSExportAll case class Arrange(score: Score, instrument: Instrument) extends Score
 
 @JSExportAll object Rest {
   val w = Rest(Duration.Whole)
@@ -18,16 +19,6 @@ sealed abstract class Score extends ScoreMethods with Product with Serializable
   val e = Rest(Duration.Eighth)
   val s = Rest(Duration.Sixteenth)
   val t = Rest(Duration.ThirtySecond)
-}
-
-object Score {
-  def simplify(a: Score, b: Score)(func: (Score, Score) => Score): Score =
-    (a.simplify, b.simplify) match {
-      case (EmptyScore , EmptyScore) => EmptyScore
-      case (EmptyScore , b         ) => b
-      case (a          , EmptyScore) => a
-      case (a          , b         ) => func(a, b)
-    }
 }
 
 trait ScoreMethods {
@@ -41,15 +32,15 @@ trait ScoreMethods {
 
   def fold(pf: Pitch => Pitch = identity, df: Duration => Duration = identity): Score =
     this match {
-      case EmptyScore     => EmptyScore
-      case Note(n, d)     => Note(pf(n), df(d))
-      case Rest(d)        => Rest(df(d))
-      case SeqScore(a, b) => SeqScore(a.fold(pf, df), b.fold(pf, df))
-      case ParScore(a, b) => ParScore(a.fold(pf, df), b.fold(pf, df))
+      case EmptyScore      => EmptyScore
+      case Note(n, d)      => Note(pf(n), df(d))
+      case Rest(d)         => Rest(df(d))
+      case SeqScore(a, b)  => SeqScore(a.fold(pf, df), b.fold(pf, df))
+      case ParScore(a, b)  => ParScore(a.fold(pf, df), b.fold(pf, df))
+      case Arrange(a, i)   => Arrange(a.fold(pf, df), i)
     }
 
   @JSExport def transpose(t: Int): Score = this.fold(pf = _ transpose t)
-
   @JSExport def halfTime: Score          = this.fold(df = _.halfTime)
   @JSExport def doubleTime: Score        = this.fold(df = _.doubleTime)
   @JSExport def dotted: Score            = this.fold(df = _.dotted)
@@ -64,5 +55,16 @@ trait ScoreMethods {
     case Rest(d)         => this
     case SeqScore(a, b)  => Score.simplify(a, b)(SeqScore.apply)
     case ParScore(a, b)  => Score.simplify(a, b)(ParScore.apply)
+    case Arrange(a, i)   => Arrange(a.simplify, i)
   }
+}
+
+object Score {
+  def simplify(a: Score, b: Score)(func: (Score, Score) => Score): Score =
+    (a.simplify, b.simplify) match {
+      case (EmptyScore , EmptyScore) => EmptyScore
+      case (EmptyScore , b         ) => b
+      case (a          , EmptyScore) => a
+      case (a          , b         ) => func(a, b)
+    }
 }

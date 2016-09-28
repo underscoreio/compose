@@ -7,7 +7,8 @@ licenses      in ThisBuild += ("Apache-2.0", url("http://apache.org/licenses/LIC
 scalacOptions in ThisBuild ++= Seq(
   "-feature",
   "-unchecked",
-  "-deprecation"
+  "-deprecation:false",
+  "-Xfatal-warnings"
 )
 
 pomExtra in Global := {

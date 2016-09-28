@@ -3,20 +3,7 @@ package compose.core
 import scalajs.js.annotation.{JSExport, JSExportAll}
 
 @JSExportAll
-case class Pitch(value: Int) {
-  def transpose(transpose: Int): Pitch =
-    Pitch(value + transpose)
-
-  def frequency: Double =
-    math.pow(2, value / 12.0) * 440.0
-
-  def w = Note(this, Duration.Whole)
-  def h = Note(this, Duration.Half)
-  def q = Note(this, Duration.Quarter)
-  def e = Note(this, Duration.Eighth)
-  def s = Note(this, Duration.Sixteenth)
-  def t = Note(this, Duration.ThirtySecond)
-}
+case class Pitch(value: Int) extends PitchMethods
 
 @JSExport
 object Pitch {
@@ -156,3 +143,26 @@ object Pitch {
   implicit def pitchToScore(pitch: Pitch)(implicit duration: Duration) =
     Note(pitch, duration)
 }
+
+trait PitchMethods {
+  self: Pitch =>
+
+  def transpose(offset: Int): Pitch =
+    Pitch(value + offset)
+
+  def frequency: Double =
+    math.pow(2, value / 12.0) * 440.0
+
+  def w = Note(this, Duration.Whole)
+  def h = Note(this, Duration.Half)
+  def q = Note(this, Duration.Quarter)
+  def e = Note(this, Duration.Eighth)
+  def s = Note(this, Duration.Sixteenth)
+  def t = Note(this, Duration.ThirtySecond)
+
+  def <(that: Pitch)  = this.value <  that.value
+  def >(that: Pitch)  = this.value >  that.value
+  def <=(that: Pitch) = this.value <= that.value
+  def >=(that: Pitch) = this.value >= that.value
+}
+

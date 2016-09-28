@@ -12,9 +12,10 @@ import scalajs.js.annotation.JSExport
 object WebAudioPlayer {
   case class State(
     score: Score,
+    tempo: Tempo,
     context: AudioContext,
-    buffer: AudioBuffer,
-    playing: Set[Command.NoteOn] = Set.empty,
+    buffers: Map[Sample, AudioBuffer],
+    playing: Set[NoteOn] = Set.empty,
     sources: Map[Int, AudioBufferSourceNode] = Map.empty,
     stopped: Boolean = false
   ) {
@@ -31,47 +32,41 @@ object WebAudioPlayer {
 }
 
 @JSExport
-class WebAudioPlayer(
-  sampleUrl: String,
+case class WebAudioPlayer(
+  sampleUrl: Sample => String,
   context: AudioContext = new AudioContext(),
   callback: WebAudioPlayer.Callback = WebAudioPlayer.Callback.empty
 ) extends Player[WebAudioPlayer.State] {
   import WebAudioPlayer._
-  import Command._
 
-  def initialise(score: Score): Future[State] = {
-    var request = new XMLHttpRequest()
-    request.open("GET", sampleUrl, true)
-    request.responseType = "arraybuffer"
-
-    var promise = Promise[State]
-    request.onload = (evt: Event) =>
-      context.decodeAudioData(
-        request.response.asInstanceOf[ArrayBuffer],
-        (buffer: AudioBuffer) => promise.success(State(score, context, buffer))
-      )
-
-    request.send()
-    promise.future
+  def initialise(score: Score, tempo: Tempo)(implicit ec: EC): Future[State] = {
+    Future.sequence(Compile(score) collect { case NoteOn(_, sample, _) => createBuffer(sample) })
+      .map(buffers => State(score, tempo, context, buffers.toMap))
   }
 
-  def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
+  def playCommand(cmd: Command)(state: State)(implicit ec: EC): Future[State] = {
     if(state.stopped) {
       // Terminate quickly:
       Future.successful(state)
     } else {
       (cmd match {
         case cmd: NoteOn =>
-          Future {
-            var source = state.context.createBufferSource()
-            source.buffer = state.buffer
-            source.connect(state.context.destination)
-            source.playbackRate.setValueAtTime(cmd.pitch.frequency / 220.0, 0)
-            source.start(0)
-            state.copy(
-              playing = state.playing + cmd,
-              sources = state.sources + (cmd.id -> source)
-            )
+          state.buffers.get(cmd.sample) match {
+            case Some(buffer) =>
+              Future {
+                var source = state.context.createBufferSource()
+                source.buffer = buffer
+                source.connect(state.context.destination)
+                source.playbackRate.setValueAtTime(cmd.pitch.frequency / 220.0, 0)
+                source.start(0)
+                state.copy(
+                  playing = state.playing + cmd,
+                  sources = state.sources + (cmd.id -> source)
+                )
+              }
+
+              case None =>
+                Future.successful(state)
           }
 
         case cmd: NoteOff =>
@@ -83,11 +78,29 @@ class WebAudioPlayer(
 
         case cmd: Wait =>
           val promise = Promise[State]
-          js.timers.setTimeout(tempo.milliseconds(cmd.duration)) {
+          js.timers.setTimeout(state.tempo.milliseconds(cmd.duration)) {
             promise.success(state)
           }
           promise.future
       }) map { state => callback(state, cmd) }
     }
+  }
+
+  def createBuffer(sample: Sample)(implicit ec: EC): Future[(Sample, AudioBuffer)] = {
+    var request = new XMLHttpRequest()
+    request.open("GET", sampleUrl(sample), true)
+    request.responseType = "arraybuffer"
+
+    var promise = Promise[(Sample, AudioBuffer)]
+
+    request.onload = (evt: Event) =>
+      context.decodeAudioData(
+        request.response.asInstanceOf[ArrayBuffer],
+        (buffer: AudioBuffer) => promise.success((sample -> buffer))
+      )
+
+    request.send()
+
+    promise.future
   }
 }

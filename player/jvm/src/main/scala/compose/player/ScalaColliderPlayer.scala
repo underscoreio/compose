@@ -30,6 +30,7 @@ object ScalaColliderPlayer {
 
   case class State(
     score     : Score,
+    tempo     : Tempo,
     available : Seq[Synth],
     playing   : Map[Int, Synth]
   )
@@ -45,15 +46,15 @@ class ScalaColliderPlayer(numChannels: Int, synthDef: SynthDef, server: Server) 
   def free: Unit =
     channels.foreach(_.free)
 
-  def initialise(score: Score): Future[State] =
-    Future.successful(State(score, channels, Map.empty))
+  def initialise(score: Score, tempo: Tempo)(implicit ec: EC): Future[State] =
+    Future.successful(State(score, tempo, channels, Map.empty))
 
-  override def shutdown(state: State): Future[State] =
+  override def shutdown(state: State)(implicit ec: EC): Future[State] =
     Future.successful(state.copy(available = Nil, playing = Map.empty))
 
-  def playCommand(state: State, cmd: Command)(implicit ec: EC, tempo: Tempo): Future[State] = {
+  def playCommand(cmd: Command)(state: State)(implicit ec: EC): Future[State] = {
     cmd match {
-      case NoteOn(id, pitch) =>
+      case NoteOn(id, _, pitch) =>
         state.available match {
           case Seq() => Future.successful(state)
 
@@ -77,7 +78,7 @@ class ScalaColliderPlayer(numChannels: Int, synthDef: SynthDef, server: Server) 
         val task = new TimerTask {
           def run(): Unit = promise.success(state)
         }
-        timer.schedule(task, tempo.milliseconds(dur))
+        timer.schedule(task, state.tempo.milliseconds(dur))
         promise.future
     }
   }

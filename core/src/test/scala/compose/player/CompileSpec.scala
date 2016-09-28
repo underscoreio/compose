@@ -19,16 +19,16 @@ class CompileSpec extends FreeSpec with Matchers {
     )
 
     Compile(score) should equal(Vector(
-      NoteOn(0, Pitch.C4),
+      NoteOn(0, Sample.default, Pitch.C4),
       Wait(Duration.Half),
       NoteOff(0),
-      NoteOn(1, Pitch.E4),
+      NoteOn(1, Sample.default, Pitch.E4),
       Wait(Duration.Half),
       NoteOff(1),
-      NoteOn(2, Pitch.G4),
+      NoteOn(2, Sample.default, Pitch.G4),
       Wait(Duration.Half),
       NoteOff(2),
-      NoteOn(3, Pitch.C5),
+      NoteOn(3, Sample.default, Pitch.C5),
       Wait(Duration.Half),
       NoteOff(3)
     ))
@@ -47,10 +47,10 @@ class CompileSpec extends FreeSpec with Matchers {
     )
 
     Compile(score) should equal(Vector(
-      NoteOn(0, Pitch.C4),
-      NoteOn(1, Pitch.E4),
-      NoteOn(2, Pitch.G4),
-      NoteOn(3, Pitch.C5),
+      NoteOn(0, Sample.default, Pitch.C4),
+      NoteOn(1, Sample.default, Pitch.E4),
+      NoteOn(2, Sample.default, Pitch.G4),
+      NoteOn(3, Sample.default, Pitch.C5),
       Wait(Duration.Half),
       NoteOff(0),
       NoteOff(1),
@@ -75,15 +75,15 @@ class CompileSpec extends FreeSpec with Matchers {
     )
 
     Compile(score) should equal(Vector(
-      NoteOn(2, Pitch.G4),
+      NoteOn(2, Sample.default, Pitch.G4),
       Wait(Duration.Eighth),
-      NoteOn(0, Pitch.C4),
+      NoteOn(0, Sample.default, Pitch.C4),
       Wait(Duration.Eighth * 3),
       NoteOff(2),
-      NoteOn(3, Pitch.C5),
+      NoteOn(3, Sample.default, Pitch.C5),
       Wait(Duration.Eighth),
       NoteOff(0),
-      NoteOn(1, Pitch.E4),
+      NoteOn(1, Sample.default, Pitch.E4),
       Wait(Duration.Eighth * 3),
       NoteOff(3),
       Wait(Duration.Eighth),

@@ -124,6 +124,14 @@ Await.result(playing, Dur.Inf)
 
 That's all. If you have any questions, please ask on [Gitter][gitter]. Happy composing!
 
+# Sample Credits
+
+The samples in the `samples` directory are sourced from the following places:
+
+- `bell.wav`, `beep1.wav`, and `beep2.wav` created with Ableton Live;
+- `kick.wav`, `snare.wav`, and `hat.wav` from [808 Trapstep Volume 1][trapstep-samples] by [TRISAMPLES][trisamples];
+- `meow.wav` by Mr Smith, sourced from [soundbible.com][soundbible].
+
 [blog]: http://underscore.io/blog/posts/2015/03/05/compositional-music-composition.html
 [davegurnell]: http://davegurnell.com
 [examples]: https://github.com/underscoreio/compose/blob/develop/main/shared/src/main/scala/compose/examples
@@ -133,3 +141,7 @@ That's all. If you have any questions, please ask on [Gitter][gitter]. Happy com
 [supercollider]: http://www.audiosynth.com
 [travis]: https://travis-ci.org/underscoreio/compose
 [webaudio]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+
+[trapstep-samples]: http://trisamples.com/808-trapstep-pack-vol-1/
+[trissamples]: http://trisamples.com
+[soundbible]: http://soundbible.com/1684-Cat-Meowing-2.html

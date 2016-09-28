@@ -26,7 +26,26 @@ The JVM player uses [ScalaCollider][scalacollider] and [Supercollider][supercoll
 to play songs using a synthesizer (a sine wave by default).
 The ScalaJS player uses the [web audio API][webaudio] to play songs using samples.
 
-# Quick Start
+# Running a Quick Demo
+
+On the JVM:
+
+ 1. Install SuperCollider 3.7+
+ 2. Set the environment variable `SC_HOME` to point to
+    `Content/Resources` inside your SuperCollider directory:
+
+    ```bash
+    export SC_HOME=/path/to/SuperCollider.app/Content/Resources
+    ```
+
+ 3. Run `sbt demoJVM/run`
+
+In Javascript:
+
+ 1. Compile the JS version with `sbt demoJS/fastOptJS`
+ 2. .
+
+# Using Compose as a Library
 
 If you're working on the JVM, you can add Compose to your SBT build as follows:
 
@@ -64,15 +83,6 @@ There are numerous shortcuts and conversions to make this code easier to write.
 Check out the [examples][examples] for inspiration.
 
 You can play your song on the JVM as follows:
-
- 1. Install SuperCollider 3.7+
- 2. Set the environment variable `SC_HOME` to point to `Content/Resources` inside your SuperCollider directory:
-
-    ```bash
-    export SC_HOME=/path/to/SuperCollider.app/Content/Resources
-    ```
-
- 3. Run a Scala program as follows:
 
 ```scala
 import compose.player._

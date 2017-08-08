@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.{AudioContext, AudioBuffer, AudioBufferSourceNode}
 import scalajs.js.typedarray.ArrayBuffer
 import scala.concurrent.{ExecutionContext => EC, _}
 import scalajs.js
-import scalajs.js.annotation.JSExport
+import scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 object WebAudioPlayer {
   case class State(
@@ -31,7 +31,7 @@ object WebAudioPlayer {
   }
 }
 
-@JSExport
+@JSExportTopLevel("WebAudioPlayer")
 case class WebAudioPlayer(
   sampleUrl: Sample => String,
   context: AudioContext = new AudioContext(),

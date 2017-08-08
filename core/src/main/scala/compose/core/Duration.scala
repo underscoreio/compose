@@ -3,7 +3,7 @@ package compose.core
 import cats.Order
 import cats.instances.int._
 
-import scalajs.js.annotation.{JSExport, JSExportAll}
+import scalajs.js.annotation.{JSExport, JSExportTopLevel, JSExportAll}
 
 @JSExportAll
 case class Duration(value: Int) {
@@ -18,7 +18,7 @@ case class Duration(value: Int) {
   def /(n: Int)         = Duration(value / n)
 }
 
-@JSExport
+@JSExportTopLevel("Duration")
 object Duration {
   @JSExport val Whole        = Duration(64)
   @JSExport val Half         = Duration(32)

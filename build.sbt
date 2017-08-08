@@ -38,7 +38,7 @@ lazy val core = crossProject
   .settings(libraryDependencies ++= Seq(
     "org.scala-js"    %% "scalajs-stubs" % scalaJSVersion % Provided,
     "org.scala-lang"   % "scala-reflect" % scalaVersion.value,
-    "org.typelevel"  %%% "cats"          % "0.7.0",
+    "org.typelevel"  %%% "cats-core"     % "1.0.0-MF",
     "org.scalatest"   %% "scalatest"     % "2.2.6" % Test
   ))
 

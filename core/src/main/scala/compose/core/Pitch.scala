@@ -1,11 +1,11 @@
 package compose.core
 
-import scalajs.js.annotation.{JSExport, JSExportAll}
+import scalajs.js.annotation.{JSExport, JSExportTopLevel, JSExportAll}
 
 @JSExportAll
 case class Pitch(value: Int) extends PitchMethods
 
-@JSExport
+@JSExportTopLevel("Pitch")
 object Pitch {
 
   @JSExport("create")

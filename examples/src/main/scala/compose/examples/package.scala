@@ -1,8 +1,8 @@
 package compose.examples
 
-import scalajs.js.annotation.JSExport
+import scalajs.js.annotation.JSExportTopLevel
 
-@JSExport
+@JSExportTopLevel("examples")
 object all
   extends Bumblebee
   with ChordProgression

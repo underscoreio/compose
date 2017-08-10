@@ -94,7 +94,9 @@ lazy val demo = crossProject
       |import compose.core._
       |import compose.examples._
       |import compose.player._
-    """.trim.stripMargin
+    """.trim.stripMargin,
+    fork in run := true,
+    connectInput in run := true
   )
 
 lazy val demoJVM = demo.jvm
